@@ -1,12 +1,11 @@
 package app.auth;
 
-import app.log.AppLogger;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 public class Authenticator {
 
     private PasswordVerifier passwordVerifier;
-    private static final Logger logger = AppLogger.getLogger(Authenticator.class);
+    private static final Logger logger = Logger.getLogger(Authenticator.class.getName());
 
     public Authenticator(PasswordVerifier passwordVerifier) {
         this.passwordVerifier = passwordVerifier;
@@ -14,7 +13,7 @@ public class Authenticator {
 
     public boolean authenticate(String username, String password) {
         boolean authenticated = passwordVerifier.verifyPassword(username, password);
-        logger.info("Authentication attempt for user {}: {}", username, authenticated ? "SUCCESS" : "FAILURE");
+        logger.info(String.format("Authentication attempt for user %s: %s", username, authenticated ? "SUCCESS" : "FAILURE"));
         return authenticated;
     }
 }

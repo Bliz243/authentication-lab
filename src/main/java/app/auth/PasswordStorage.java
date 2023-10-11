@@ -2,7 +2,7 @@ package app.auth;
 
 import app.log.AppLogger;
 import app.util.ConfigManager;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 import java.io.*;
 import java.util.HashMap;
@@ -10,8 +10,8 @@ import java.util.Map;
 
 public class PasswordStorage {
 
-    private static final Logger logger = AppLogger.getLogger(PasswordStorage.class);
-    private static final String PASSWORD_FILE = ConfigManager.getConfigValue("passwordFile");
+    private static final Logger logger = AppLogger.getLogger(PasswordStorage.class.getName());
+    private static final String PASSWORD_FILE = ConfigManager.getInstance().getParameter("passwordFile");  // adjusted line
     private Map<String, String> passwordMap;
 
     public PasswordStorage() {
@@ -31,7 +31,7 @@ public class PasswordStorage {
                 }
             }
         } catch (IOException e) {
-            logger.error("Failed to load passwords from file", e);
+            logger.severe("Failed to load passwords from file: " + e.getMessage());
         }
     }
 
@@ -51,7 +51,7 @@ public class PasswordStorage {
                 writer.newLine();
             }
         } catch (IOException e) {
-            logger.error("Failed to save passwords to file", e);
+            logger.severe("Failed to save passwords to file: " + e.getMessage());
         }
     }
 }

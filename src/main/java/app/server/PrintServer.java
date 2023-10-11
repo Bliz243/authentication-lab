@@ -2,22 +2,22 @@ package app.server;
 
 import app.log.AppLogger;
 import app.util.ConfigManager;
-import org.apache.logging.log4j.Logger;
+import java.util.logging.Logger;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 
 public class PrintServer extends UnicastRemoteObject implements PrintService {
 
-    private static final Logger logger = AppLogger.getLogger(PrintServer.class);
+    private static final Logger logger = Logger.getLogger(PrintServer.class.getName());
 
     public PrintServer() throws RemoteException {
         super();
     }
 
-    @Override
+     @Override
     public void print(String filename, String printer) throws RemoteException {
-        logger.info("Print request: {} on printer: {}", filename, printer);
+        logger.info("Print request: " + filename + " on printer: " + printer);
     }
 
     @Override
@@ -54,15 +54,18 @@ public class PrintServer extends UnicastRemoteObject implements PrintService {
 
    @Override
     public String readConfig(String parameter) throws RemoteException {
-        String value = ConfigManager.getConfigValue(parameter);
-        logger.info("Read config for parameter: {} with value: {}", parameter, value);
+        String value = ConfigManager.getInstance().getParameter(parameter);  // adjusted line
+        logger.info("Read config for parameter: " + parameter + " with value: " + value);
         return value;
     }
 
     @Override
     public void setConfig(String parameter, String value) throws RemoteException {
-        ConfigManager.setConfigValue(parameter, value);
-        logger.info("Set config for parameter: {} to value: {}", parameter, value);
+        ConfigManager.getInstance().setParameter(parameter, value);  // adjusted line
+        logger.info("Set config for parameter: " + parameter + " to value: " + value);
     }
+
+    
+
 
 }

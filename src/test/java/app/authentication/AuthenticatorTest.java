@@ -2,6 +2,7 @@ package app.authentication;
 
 import app.auth.Authenticator;
 import app.auth.PasswordVerifier;
+import app.auth.PasswordStorage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

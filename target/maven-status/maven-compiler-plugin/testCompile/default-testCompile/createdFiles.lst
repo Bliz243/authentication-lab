@@ -1,0 +1,4 @@
+app/authentication/PasswordVerifierTest.class
+app/authentication/PasswordStorageTest.class
+app/server/PrintServerTest.class
+app/authentication/AuthenticatorTest.class

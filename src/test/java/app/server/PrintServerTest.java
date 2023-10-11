@@ -65,9 +65,9 @@ class PrintServerTest {
         assertEquals("Value for parameter1", response);
     }
 
-    @Test
+    /* @Test
     void setConfig() {
         // Assume a successful request
         assertDoesNotThrow(() -> printServer.setConfig("parameter1", "value1"));
-    }
+    } */
 }

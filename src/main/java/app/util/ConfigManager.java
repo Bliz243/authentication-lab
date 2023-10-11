@@ -9,10 +9,21 @@ public class ConfigManager {
     private Properties properties;
     private String configFilePath;
 
-    public ConfigManager(String configFilePath) {
+    // Private constructor to prevent instantiation
+    private ConfigManager(String configFilePath) {
         this.configFilePath = configFilePath;
         this.properties = new Properties();
         loadConfig();
+    }
+
+    // Static instance holder
+    private static class Holder {
+        private static final ConfigManager INSTANCE = new ConfigManager("src/main/resources/config.properties");
+    }
+
+    // Public method to get the singleton instance
+    public static ConfigManager getInstance() {
+        return Holder.INSTANCE;
     }
 
     private void loadConfig() {

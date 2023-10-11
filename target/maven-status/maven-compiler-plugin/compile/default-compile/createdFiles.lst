@@ -1,0 +1,9 @@
+app/auth/PasswordStorage.class
+app/server/PrintServer.class
+app/util/ConfigManager.class
+app/auth/PasswordVerifier.class
+app/util/ConfigManager$Holder.class
+app/server/PrintService.class
+app/log/AppLogger.class
+app/auth/Authenticator.class
+app/client/PrintClient.class
