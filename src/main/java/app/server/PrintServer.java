@@ -65,7 +65,19 @@ public class PrintServer extends UnicastRemoteObject implements PrintService {
         logger.info("Set config for parameter: " + parameter + " to value: " + value);
     }
 
-    
-
-
+    @Override
+    public void printCommands() throws RemoteException {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Available commands:\n");
+        sb.append("start: Starts the print server.\n");
+        sb.append("stop: Stops the print server.\n");
+        sb.append("restart: Restarts the print server.\n");
+        sb.append("print: Prints the file. Args: filename, printer\n");
+        sb.append("topQueue: Moves job to top of queue. Args: printer, job\n");
+        sb.append("queue: Shows print queue. Arg: printer\n");
+        sb.append("status: Shows printer status. Arg: printer\n");
+        sb.append("readConfig: Reads configuration. Arg: parameter\n");
+        sb.append("setConfig: Sets configuration. Args: parameter, value\n");
+        logger.info(sb.toString());
+    }
 }

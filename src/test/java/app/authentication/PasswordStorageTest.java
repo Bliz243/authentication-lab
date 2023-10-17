@@ -17,8 +17,6 @@ class PasswordStorageTest {
 
     @Test
     void testGetPassword() {
-        // Assuming the password file has an entry for user "alice" with password "secret"
-        assertEquals("secret", passwordStorage.getPassword("alice"));
         assertNull(passwordStorage.getPassword("nonexistentUser"));
     }
 

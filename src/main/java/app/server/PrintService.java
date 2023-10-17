@@ -13,4 +13,5 @@ public interface PrintService extends Remote {
     String status(String printer) throws RemoteException;
     String readConfig(String parameter) throws RemoteException;
     void setConfig(String parameter, String value) throws RemoteException;
+    void printCommands() throws RemoteException;
 }

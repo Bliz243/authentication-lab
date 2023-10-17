@@ -1,4 +1,5 @@
-/home/jacob/Data_Security/authentication-lab/restructure/authentication-lab/src/test/java/app/authentication/PasswordStorageTest.java
-/home/jacob/Data_Security/authentication-lab/restructure/authentication-lab/src/test/java/app/authentication/AuthenticatorTest.java
-/home/jacob/Data_Security/authentication-lab/restructure/authentication-lab/src/test/java/app/server/PrintServerTest.java
-/home/jacob/Data_Security/authentication-lab/restructure/authentication-lab/src/test/java/app/authentication/PasswordVerifierTest.java
+/home/jacob/Data_Security/authentication-lab/authentication-lab/src/test/java/app/authentication/PasswordStorageTest.java
+/home/jacob/Data_Security/authentication-lab/authentication-lab/src/test/java/app/authentication/PasswordVerifierTest.java
+/home/jacob/Data_Security/authentication-lab/authentication-lab/src/test/java/app/server/PrintServerTest.java
+/home/jacob/Data_Security/authentication-lab/authentication-lab/src/test/java/app/authentication/SeucrePasswordServiceTest.java
+/home/jacob/Data_Security/authentication-lab/authentication-lab/src/test/java/app/authentication/AuthenticatorTest.java
