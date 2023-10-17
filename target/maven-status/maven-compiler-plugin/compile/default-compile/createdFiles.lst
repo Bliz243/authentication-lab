@@ -8,6 +8,7 @@ app/auth/SecurePasswordService.class
 app/util/CommandLineInterface$Command.class
 app/util/ConfigManager.class
 app/auth/PasswordVerifier.class
+app/server/IPrintServer.class
 app/util/ConfigManager$Holder.class
-app/server/PrintService.class
 app/log/AppLogger.class
+app/server/PrintServerRun.class

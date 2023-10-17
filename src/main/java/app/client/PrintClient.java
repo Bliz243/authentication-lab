@@ -3,13 +3,14 @@ package app.client;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
-import app.server.PrintServer;
+import javax.rmi.ssl.SslRMIClientSocketFactory;
+
+import app.server.IPrintServer;
 import app.util.CommandLineInterface;
+import app.util.ConfigManager;
 
 public class PrintClient {
 
@@ -17,13 +18,14 @@ public class PrintClient {
 
     public static void main(String[] args) throws RemoteException {
         try {
-            PrintServer printServer = new PrintServer();
+            // IPrintServer printServer =(IPrintServer)Naming.lookup("rmi://localhost:5000/PrintServer");
+            System.setProperty("javax.net.ssl.trustStore", ConfigManager.getInstance().getParameter("clientTrust"));
+            System.setProperty("javax.net.ssl.trustStorePassword", "keystore");
 
-            LocateRegistry.createRegistry(1099);
 
-            Naming.rebind("rmi://localhost:1099/PrintServer", printServer);
-
+            IPrintServer printServer = (IPrintServer) Naming.lookup("rmi://localhost:5000/PrintServer");
             logger.info("PrintServer is ready and waiting for client connections...");
+
 
             // Create CLI and start it
             CommandLineInterface cli = new CommandLineInterface(printServer);

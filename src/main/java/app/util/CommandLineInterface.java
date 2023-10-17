@@ -4,6 +4,7 @@ import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 
+import app.server.IPrintServer;
 import app.server.PrintServer;
 
 public class CommandLineInterface {
@@ -19,35 +20,32 @@ public class CommandLineInterface {
     }
 
     private final Map<String, Command> commandsMap = new HashMap<>();
-    private final PrintServer server;
 
-    public CommandLineInterface(PrintServer server) {
-        this.server = server;
+    public CommandLineInterface(IPrintServer printServer) {
 
-        commandsMap.put("start", args -> server.start());
-        commandsMap.put("stop", args -> server.stop());
-        commandsMap.put("restart", args -> server.restart());
-        commandsMap.put("print", args -> server.print(args[0], args[1])); // expects 2 arguments
-        commandsMap.put("topQueue", args -> server.topQueue(args[0], Integer.parseInt(args[1]))); // expects 2 arguments
-
-        // Commands with return values
+        // Print server commands
+        commandsMap.put("start", args -> printServer.start());
+        commandsMap.put("stop", args -> printServer.stop());
+        commandsMap.put("restart", args -> printServer.restart());
+        commandsMap.put("print", args -> printServer.print(args[0], args[1]));
+        commandsMap.put("topQueue", args -> printServer.topQueue(args[0], Integer.parseInt(args[1])));
         commandsMap.put("queue", args -> {
-            String result = server.queue(args[0]); // expects 1 argument
+            String result = printServer.queue(args[0]);
             System.out.println(result);
         });
         commandsMap.put("status", args -> {
-            String result = server.status(args[0]); // expects 1 argument
+            String result = printServer.status(args[0]);
             System.out.println(result);
         });
         commandsMap.put("readConfig", args -> {
-            String result = server.readConfig(args[0]); // expects 1 argument
+            String result = printServer.readConfig(args[0]);
             System.out.println(result);
         });
+        commandsMap.put("setConfig", args -> printServer.setConfig(args[0], args[1]));
+        commandsMap.put("help", args -> printServer.printCommands());
 
-        // Commands with arguments and return values
-        commandsMap.put("setConfig", args -> server.setConfig(args[0], args[1])); // expects 2 arguments
 
-        commandsMap.put("help", args -> server.printCommands());
+        // User commands
 
     }
 
