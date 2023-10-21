@@ -22,7 +22,7 @@ class PasswordStorageTest {
 
     @Test
     void testUpdatePassword() {
-        passwordStorage.updatePassword("bob", "newSecret");
+        passwordStorage.updateExistingPassword("bob", "newSecret");
         assertEquals("newSecret", passwordStorage.getPassword("bob"));
     }
 }

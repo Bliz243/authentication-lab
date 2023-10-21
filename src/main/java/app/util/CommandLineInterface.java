@@ -28,6 +28,10 @@ public class CommandLineInterface {
         commandsMap.put("stop", args -> printServer.stop());
         commandsMap.put("restart", args -> printServer.restart());
         commandsMap.put("print", args -> printServer.print(args[0], args[1]));
+        commandsMap.put("authenticate", args -> {
+            String result = printServer.authenticateUser(args[0], args[1]);
+            System.out.println(result);
+        });
         commandsMap.put("topQueue", args -> printServer.topQueue(args[0], Integer.parseInt(args[1])));
         commandsMap.put("queue", args -> {
             String result = printServer.queue(args[0]);
@@ -42,7 +46,10 @@ public class CommandLineInterface {
             System.out.println(result);
         });
         commandsMap.put("setConfig", args -> printServer.setConfig(args[0], args[1]));
-        commandsMap.put("help", args -> printServer.printCommands());
+        commandsMap.put("help", args -> {
+            String result = printServer.printCommands();
+            System.out.println(result);
+        });
 
 
         // User commands

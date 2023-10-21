@@ -11,7 +11,7 @@ import java.util.Map;
 public class PasswordStorage {
 
     private static final Logger logger = AppLogger.getLogger(PasswordStorage.class.getName());
-    private static final String PASSWORD_FILE = ConfigManager.getInstance().getParameter("passwordFile");  // adjusted line
+    private static final String PASSWORD_FILE = ConfigManager.getInstance().getParameter("passwordFile");
     private Map<String, String> passwordMap;
 
     public PasswordStorage() {
@@ -39,9 +39,28 @@ public class PasswordStorage {
         return passwordMap.get(username);
     }
 
-    public void updatePassword(String username, String newPassword) {
-        passwordMap.put(username, newPassword);
-        savePasswords();
+    public boolean userExists(String username) {
+        return passwordMap.containsKey(username);
+    }
+
+    public void createNewUser(String username, String password) {
+        if (!userExists(username)) {
+            passwordMap.put(username, password);
+            savePasswords();
+            logger.info("New user created: " + username);
+        } else {
+            logger.warning("User already exists: " + username);
+        }
+    }
+
+    public void updateExistingPassword(String username, String newPassword) {
+        if (userExists(username)) {
+            passwordMap.put(username, newPassword);
+            savePasswords();
+            logger.info("Password updated for user: " + username);
+        } else {
+            logger.warning("User does not exist: " + username);
+        }
     }
 
     private void savePasswords() {

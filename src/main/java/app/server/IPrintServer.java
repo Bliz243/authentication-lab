@@ -15,10 +15,10 @@ public interface IPrintServer extends Remote {
     String status(String printer) throws RemoteException;
     String readConfig(String parameter) throws RemoteException;
     void setConfig(String parameter, String value) throws RemoteException;
-    void printCommands() throws RemoteException;
+    String printCommands() throws RemoteException;
 
     // Extra methods for controlling printserver flow
-    void authenticateUser(String user, String password) throws RemoteException;
+    String authenticateUser(String user, String password) throws RemoteException;
     void createUser(String newUser, String password) throws RemoteException;
     void updatePassword(String user, String newPassowrd) throws RemoteException;
     void logout() throws RemoteException;

@@ -27,7 +27,7 @@ class PasswordVerifierTest {
         String originalPassword = "secret";
         String hashedPassword = securePasswordService.generateSecurePassword(originalPassword);
         // Update the password storage with the hashed password for "alice"
-        passwordStorage.updatePassword("alice", hashedPassword);
+        passwordStorage.updateExistingPassword("alice", hashedPassword);
 
         assertTrue(passwordVerifier.verifyPassword("alice", originalPassword));
         assertFalse(passwordVerifier.verifyPassword("alice", "wrongPassword"));

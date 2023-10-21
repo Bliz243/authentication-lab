@@ -100,38 +100,48 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     }
 
     @Override
-    public void printCommands() throws RemoteException {
-        if (!hasAuth) {
-            throw new RemoteException("Unauthorized");
-        }
+    public String printCommands() throws RemoteException {
         StringBuilder sb = new StringBuilder();
-        sb.append("Available commands:\n");
+        sb.append("\nAvailable commands:\n");
+        if (!hasAuth) {
+            sb.append("authenticate <username> <password>: Authenticate user");
+            sb.append("help: To see available commands");
+            String helpCommands = sb.toString();
+            return helpCommands;
+        }
         sb.append("start: Starts the print server.\n");
         sb.append("stop: Stops the print server.\n");
         sb.append("restart: Restarts the print server.\n");
-        sb.append("print: Prints the file. Args: filename, printer\n");
-        sb.append("topQueue: Moves job to top of queue. Args: printer, job\n");
-        sb.append("queue: Shows print queue. Arg: printer\n");
-        sb.append("status: Shows printer status. Arg: printer\n");
-        sb.append("readConfig: Reads configuration. Arg: parameter\n");
-        sb.append("setConfig: Sets configuration. Args: parameter, value\n");
-        logger.info(sb.toString());
+        sb.append("print <filename> <printer>: Prints the file.\n");
+        sb.append("queue <printer>: Shows print queue. \n");
+        sb.append("topQueue <printer> <job>: Moves job to top of queue.\n");
+        sb.append("status <printer>: Shows printer status. \n");
+        sb.append("readConfig <parameter>: Reads configuration.\n");
+        sb.append("setConfig <paramter> <value>: Sets configuration.\n");
+        sb.append("createUser <username> <password>: Creates a new user\n");
+        sb.append("updateUser <username> <password>: Update user password\n");
+
+        String helpCommands = sb.toString();
+        logger.info("These are the commands available: \n\n" + helpCommands);
+        return helpCommands;
     }
 
     @Override
-    public void authenticateUser(String user, String password) throws RemoteException {
+    public String authenticateUser(String user, String password) throws RemoteException {
         int triesForLogin = 0;
+
+        if (!hasAuth && triesForLogin == 3){
+            return "Sorry bitch, i think you're trying to DDOS our PrintServer \n\n You're getting IP banned.... Sit down";
+        }
+
         if (autheticator.authenticate(user, password)) {
             hasAuth = true;
-            logger.info("Login succesful" + "\nWelcome  " + user);
-
+            logger.info("Login succesful for user: \n" + user);
+            return "Login succesful" + "\nWelcome  " + user + "\n\n" + printCommands();
+        } else {
+            triesForLogin++;
+            return "Login failed...";
         }
-        if (triesForLogin == 3){
-            logger.info("Sorry bitch, i think you're trying to DDOS our PrintServer \n\n You're getting IP banned.... Sit down");
-        }
-        triesForLogin++;
-        logger.info("Login failed...");
-
     }
 
     @Override
@@ -139,19 +149,18 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         if (!hasAuth) {
             throw new RemoteException("Unauthorized");
         }
-
-        passwordStorage.updatePassword(newUser, password);
-        logger.info("Created User: " + newUser);
-
-    };
+        passwordStorage.createNewUser(newUser, password);
+        logger.info("User created: " + newUser);
+    }
 
     @Override
     public void updatePassword(String user, String password) throws RemoteException {
         if (!hasAuth) {
             throw new RemoteException("Unauthorized");
         }
-        passwordStorage.updatePassword(user, password);
-    };
+        passwordStorage.updateExistingPassword(user, password);
+        logger.info("Password updated for user: " + user);
+    }
 
 
     @Override
