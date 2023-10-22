@@ -10,7 +10,6 @@ public class ConfigManager {
     private Properties properties;
     private String configFilePath;
 
-    // Private constructor to prevent instantiation
     private ConfigManager(String configFilePath) {
         this.configFilePath = configFilePath;
         this.properties = new Properties();
@@ -22,7 +21,6 @@ public class ConfigManager {
         private static final ConfigManager INSTANCE = new ConfigManager("config.properties");
     }
 
-    // Public method to get the singleton instance
     public static ConfigManager getInstance() {
         return Holder.INSTANCE;
     }
@@ -35,7 +33,6 @@ public class ConfigManager {
         properties.load(inStream);
     } catch (IOException e) {
         e.printStackTrace();
-        // Handle the exception (e.g., log it, rethrow it, or create a default configuration)
     }
 }
 
@@ -54,7 +51,6 @@ public class ConfigManager {
             properties.store(outStream, null);
         } catch (IOException e) {
             e.printStackTrace();
-            // Handle the exception (e.g., log it or rethrow it)
         }
     }
 }

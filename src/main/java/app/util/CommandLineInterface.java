@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import app.server.IPrintServer;
-import app.server.PrintServer;
 
 public class CommandLineInterface {
 

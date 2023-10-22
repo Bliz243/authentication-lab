@@ -2,11 +2,8 @@ package app.client;
 
 import java.rmi.Naming;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
 import java.util.Scanner;
 import java.util.logging.Logger;
-
-import javax.rmi.ssl.SslRMIClientSocketFactory;
 
 import app.server.IPrintServer;
 import app.util.CommandLineInterface;

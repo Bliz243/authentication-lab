@@ -23,10 +23,9 @@ class PasswordVerifierTest {
 
     @Test
     void testVerifyPassword() throws Exception {
-        // Assuming the password file has an entry for user "alice" with a hashed password
         String originalPassword = "secret";
         String hashedPassword = securePasswordService.generateSecurePassword(originalPassword);
-        // Update the password storage with the hashed password for "alice"
+
         passwordStorage.updateExistingPassword("alice", hashedPassword);
 
         assertTrue(passwordVerifier.verifyPassword("alice", originalPassword));

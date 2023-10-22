@@ -3,7 +3,6 @@ package app.server;
 import app.auth.Authenticator;
 import app.auth.PasswordStorage;
 import app.auth.PasswordVerifier;
-import app.log.AppLogger;
 import app.util.ConfigManager;
 import java.util.logging.Logger;
 
@@ -22,6 +21,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         super();
     }
 
+    //TODO Has to return a string which is feedback for user - Change interface and this - Remember to update ComandLineInterface
     @Override
     public void print(String filename, String printer) throws RemoteException {
         if (!hasAuth) {
@@ -30,6 +30,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         logger.info("Print request: " + filename + " on printer: " + printer);
     }
 
+    //TODO
     @Override
     public String queue(String printer) throws RemoteException {
         if (!hasAuth) {
@@ -39,6 +40,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         return "Queue for " + printer;
     }
 
+    //TODO Has to return a string which is feedback for user - Change interface and this - Remember to update ComandLineInterface
     @Override
     public void topQueue(String printer, int job) throws RemoteException {
         if (!hasAuth) {
@@ -47,6 +49,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         System.out.println("Move job: " + job + " to top of queue on printer: " + printer);
     }
 
+    //TODO Has to return a string which is feedback for user - Change interface and this - Remember to update ComandLineInterface
     @Override
     public void start() throws RemoteException {
         if (!hasAuth) {
@@ -55,6 +58,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         System.out.println("Print server started.");
     }
 
+    //TODO Has to return a string which is feedback for user - Change interface and this - Remember to update ComandLineInterface
     @Override
     public void stop() throws RemoteException {
         if (!hasAuth) {
@@ -63,6 +67,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         System.out.println("Print server stopped.");
     }
 
+    //TODO Has to return a string which is feedback for user - Change interface and this - Remember to update ComandLineInterface
     @Override
     public void restart() throws RemoteException {
         if (!hasAuth) {
@@ -71,6 +76,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         System.out.println("Print server restarted.");
     }
 
+    //TODO
     @Override
     public String status(String printer) throws RemoteException {
         if (!hasAuth) {
@@ -80,6 +86,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         return "Status for " + printer;
     }
 
+    //TODO
     @Override
     public String readConfig(String parameter) throws RemoteException {
         if (!hasAuth) {
@@ -90,6 +97,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         return value;
     }
 
+    //TODO Has to return a string which is feedback for user - Change interface and this - Remember to update ComandLineInterface
     @Override
     public void setConfig(String parameter, String value) throws RemoteException {
         if (!hasAuth) {
@@ -99,6 +107,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         logger.info("Set config for parameter: " + parameter + " to value: " + value);
     }
 
+    //TODO Update the available command list
     @Override
     public String printCommands() throws RemoteException {
         StringBuilder sb = new StringBuilder();
@@ -144,6 +153,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         }
     }
 
+    //TODO Haven't written test for this so we might need to test this functionality
     @Override
     public void createUser(String newUser, String password) throws RemoteException {
         if (!hasAuth) {
@@ -153,6 +163,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         logger.info("User created: " + newUser);
     }
 
+    //TODO Haven't written test for this so we might need to test this functionality
     @Override
     public void updatePassword(String user, String password) throws RemoteException {
         if (!hasAuth) {

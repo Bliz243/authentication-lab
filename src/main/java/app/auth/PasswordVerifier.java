@@ -20,7 +20,6 @@ public class PasswordVerifier {
         try {
             return securePasswordService.verifyPassword(providedPassword, storedPasswordHash, requiresUpdate);
         } catch (Exception e) {
-            // Handle the exception or log it
             return false;
         }
     }

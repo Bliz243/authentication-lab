@@ -12,10 +12,10 @@ import java.util.Base64;
 
 public class SecurePasswordService {
 
-    private static final int SALT_SIZE = 16; // 128 bits
-    private static final int PEPPER_SIZE = 8; // 64 bits
-    private static final int ITERATIONS = 100000; // Number of iterations for PBKDF2
-    private static final int HASH_SIZE = 64; // 512 bits for SHA512
+    private static final int SALT_SIZE = 16;
+    private static final int PEPPER_SIZE = 8;
+    private static final int ITERATIONS = 100000;
+    private static final int HASH_SIZE = 64;
     private static final String ALGORITHM = "PBKDF2WithHmacSHA512";
 
     private final byte[] localSecret = "YourLocalSecretHere".getBytes(StandardCharsets.UTF_8);
