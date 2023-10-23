@@ -4,142 +4,241 @@ import app.auth.Authenticator;
 import app.auth.PasswordStorage;
 import app.auth.PasswordVerifier;
 import app.util.ConfigManager;
+
+import java.util.LinkedList;
 import java.util.logging.Logger;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
-    private static final Logger logger = Logger.getLogger(PrintServer.class.getName());
     private boolean hasAuth = false;
+    private boolean running = false;
+
+    private static final Logger logger = Logger.getLogger(PrintServer.class.getName());
     private static final PasswordStorage passwordStorage = new PasswordStorage();
     private static final PasswordVerifier passwordVerifier = new PasswordVerifier(passwordStorage);
     private static final Authenticator autheticator = new Authenticator(passwordVerifier);
+    private LinkedList<PrintJob> printQueue = new LinkedList<>();
+    private int nextJobId = 1;
 
     public PrintServer() throws RemoteException {
         super();
     }
 
-    //TODO Has to return a string which is feedback for user - Change interface and this - Remember to update ComandLineInterface
     @Override
-    public void print(String filename, String printer) throws RemoteException {
+    public String print(String filename, String printer) throws RemoteException {
         if (!hasAuth) {
             throw new RemoteException("Unauthorized");
         }
+
+        if (!running) {
+            return "Server not running...";
+        }
+
         logger.info("Print request: " + filename + " on printer: " + printer);
+        return "Printing " + filename + " on printer: " + printer;
     }
 
-    //TODO
     @Override
     public String queue(String printer) throws RemoteException {
         if (!hasAuth) {
             throw new RemoteException("Unauthorized");
         }
-        System.out.println("Queue request for printer: " + printer);
-        return "Queue for " + printer;
+
+        if (!running) {
+            return "Server not running...";
+        }
+
+        StringBuilder queueStatus = new StringBuilder();
+        queueStatus.append("Queue for printer ").append(printer).append(":\n");
+
+        for (PrintJob job : printQueue) {
+            if (job.getPrinter().equals(printer)) {
+                queueStatus.append(job).append("\n");
+            }
+        }
+
+        logger.info("Queue request for printer: " + printer);
+        return queueStatus.toString();
     }
 
-    //TODO Has to return a string which is feedback for user - Change interface and this - Remember to update ComandLineInterface
     @Override
-    public void topQueue(String printer, int job) throws RemoteException {
+    public String topQueue(String printer, int jobId) throws RemoteException {
         if (!hasAuth) {
             throw new RemoteException("Unauthorized");
         }
-        System.out.println("Move job: " + job + " to top of queue on printer: " + printer);
+
+        if (!running) {
+            return "Server not running...";
+        }
+
+        PrintJob jobToMove = null;
+        for (PrintJob job : printQueue) {
+            if (job.getId() == jobId && job.getPrinter().equals(printer)) {
+                jobToMove = job;
+                break;
+            }
+        }
+
+        if (jobToMove != null) {
+            printQueue.remove(jobToMove);
+            printQueue.addFirst(jobToMove);
+            logger.info("Move job: " + jobId + " to top of queue on printer: " + printer);
+            return "Moving job: " + jobId + " to top of queue on printer: " + printer;
+        } else {
+            return "Job not found";
+        }
     }
 
-    //TODO Has to return a string which is feedback for user - Change interface and this - Remember to update ComandLineInterface
-    @Override
-    public void start() throws RemoteException {
+    public String addToQueue(String filename, String printer) throws RemoteException {
         if (!hasAuth) {
             throw new RemoteException("Unauthorized");
         }
+
+        if (!running) {
+            return "Server not running...";
+        }
+
+        int newJobId = nextJobId++;
+        PrintJob newJob = new PrintJob(newJobId, filename, printer);
+        printQueue.addFirst(newJob);
+        logger.info("Added job: " + newJobId + " to queue on printer: " + printer);
+        return "Added job: " + newJobId + " to queue on printer: " + printer;
+    }
+
+    @Override
+    public String start() throws RemoteException {
+
+        if (!hasAuth) {
+            throw new RemoteException("Unauthorized");
+        }
+
+        if (running) {
+            return "Server already running...";
+        }
+
+        running = true;
         System.out.println("Print server started.");
+        return "Print server started.";
     }
 
-    //TODO Has to return a string which is feedback for user - Change interface and this - Remember to update ComandLineInterface
     @Override
-    public void stop() throws RemoteException {
+    public String stop() throws RemoteException {
         if (!hasAuth) {
             throw new RemoteException("Unauthorized");
         }
-        System.out.println("Print server stopped.");
+        running = false;
+
+        logger.info("Print server stopped.");
+        return "Print server stopped";
     }
 
-    //TODO Has to return a string which is feedback for user - Change interface and this - Remember to update ComandLineInterface
     @Override
-    public void restart() throws RemoteException {
+    public String restart() throws RemoteException, InterruptedException {
         if (!hasAuth) {
             throw new RemoteException("Unauthorized");
         }
-        System.out.println("Print server restarted.");
+
+        if (!running) {
+            return "Server not running...";
+        }
+
+        // bruh🤪🤣
+        running = false;
+        logger.info("Restaring server...");
+        wait(10000);
+        running = true;
+        logger.info("Print server restarted");
+
+        return "Print server restarted";
     }
 
-    //TODO
     @Override
     public String status(String printer) throws RemoteException {
         if (!hasAuth) {
             throw new RemoteException("Unauthorized");
         }
+
+        if (!running) {
+            return "Server not running...";
+        }
         System.out.println("Status request for printer: " + printer);
         return "Status for " + printer;
     }
 
-    //TODO
     @Override
     public String readConfig(String parameter) throws RemoteException {
         if (!hasAuth) {
             throw new RemoteException("Unauthorized");
+        }
+        if (!running) {
+            return "Server not running...";
         }
         String value = ConfigManager.getInstance().getParameter(parameter); // adjusted line
         logger.info("Read config for parameter: " + parameter + " with value: " + value);
         return value;
     }
 
-    //TODO Has to return a string which is feedback for user - Change interface and this - Remember to update ComandLineInterface
     @Override
-    public void setConfig(String parameter, String value) throws RemoteException {
+    public String setConfig(String parameter, String value) throws RemoteException {
+
         if (!hasAuth) {
             throw new RemoteException("Unauthorized");
         }
+
+        if (!running) {
+            return "Server not running...";
+        }
         ConfigManager.getInstance().setParameter(parameter, value); // adjusted line
         logger.info("Set config for parameter: " + parameter + " to value: " + value);
+        return "Set config for parameter: " + parameter + " to value: " + value;
     }
 
-    //TODO Update the available command list
+    // TODO Update the available command list
     @Override
     public String printCommands() throws RemoteException {
+
         StringBuilder sb = new StringBuilder();
         sb.append("\nAvailable commands:\n");
         if (!hasAuth) {
             sb.append("authenticate <username> <password>: Authenticate user");
             sb.append("help: To see available commands");
-            String helpCommands = sb.toString();
-            return helpCommands;
+            return sb.toString();
         }
-        sb.append("start: Starts the print server.\n");
+        if (!running) {
+            sb.append("start: Starts the print server.\n");
+            return sb.toString();
+        }
         sb.append("stop: Stops the print server.\n");
         sb.append("restart: Restarts the print server.\n");
         sb.append("print <filename> <printer>: Prints the file.\n");
         sb.append("queue <printer>: Shows print queue. \n");
         sb.append("topQueue <printer> <job>: Moves job to top of queue.\n");
+        sb.append("addToQueue <filename> <printer>: Adds to printer queue.\n");
         sb.append("status <printer>: Shows printer status. \n");
         sb.append("readConfig <parameter>: Reads configuration.\n");
         sb.append("setConfig <paramter> <value>: Sets configuration.\n");
         sb.append("createUser <username> <password>: Creates a new user\n");
-        sb.append("updateUser <username> <password>: Update user password\n");
+        sb.append("updatePassword <username> <password>: Update user password\n");
+        sb.append("logout: Logs current user out\n");
 
-        String helpCommands = sb.toString();
-        logger.info("These are the commands available: \n\n" + helpCommands);
-        return helpCommands;
+        logger.info("Returned commands");
+        return sb.toString();
     }
 
     @Override
     public String authenticateUser(String user, String password) throws RemoteException {
         int triesForLogin = 0;
 
-        if (!hasAuth && triesForLogin == 3){
+        if (hasAuth) {
+            return "You're already logged in.";
+        }
+
+        if (!hasAuth && triesForLogin == 3) {
             return "Sorry bitch, i think you're trying to DDOS our PrintServer \n\n You're getting IP banned.... Sit down";
         }
 
@@ -153,30 +252,41 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         }
     }
 
-    //TODO Haven't written test for this so we might need to test this functionality
     @Override
-    public void createUser(String newUser, String password) throws RemoteException {
+    public String createUser(String newUser, String password)
+            throws RemoteException, NoSuchAlgorithmException, InvalidKeySpecException {
         if (!hasAuth) {
             throw new RemoteException("Unauthorized");
         }
+
+        if (!running) {
+            return "Server not running...";
+        }
+
         passwordStorage.createNewUser(newUser, password);
         logger.info("User created: " + newUser);
+        return "User created: " + newUser;
     }
 
-    //TODO Haven't written test for this so we might need to test this functionality
     @Override
-    public void updatePassword(String user, String password) throws RemoteException {
+    public String updatePassword(String user, String password)
+            throws RemoteException, NoSuchAlgorithmException, InvalidKeySpecException {
         if (!hasAuth) {
             throw new RemoteException("Unauthorized");
         }
+
+        if (!running) {
+            return "Server not running...";
+        }
+
         passwordStorage.updateExistingPassword(user, password);
         logger.info("Password updated for user: " + user);
+        return "Password updated for user:" + user;
     }
 
-
     @Override
-    public void logout() throws RemoteException {
+    public String logout() throws RemoteException {
         hasAuth = false;
+        return "Logging out";
     };
-
 }

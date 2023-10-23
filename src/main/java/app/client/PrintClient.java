@@ -41,7 +41,13 @@ public class PrintClient {
                 if (parts.length > 1) {
                     commandArgs = fullCommand.substring(command.length()).trim().split(" ");
                 }
-                cli.executeCommand(command, commandArgs);
+                try {
+                    cli.executeCommand(command, commandArgs);
+                } catch (IndexOutOfBoundsException e) {
+                    logger.info("You need to input arguments for this command.");
+                } catch (NumberFormatException e) {
+                    logger.info("Invalid job");
+                }
             }
 
             scanner.close();

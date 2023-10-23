@@ -5,6 +5,8 @@ import app.util.ConfigManager;
 import java.util.logging.Logger;
 
 import java.io.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,8 +15,11 @@ public class PasswordStorage {
     private static final Logger logger = AppLogger.getLogger(PasswordStorage.class.getName());
     private static final String PASSWORD_FILE = ConfigManager.getInstance().getParameter("passwordFile");
     private Map<String, String> passwordMap;
+    private SecurePasswordService passwordService;
+
 
     public PasswordStorage() {
+        passwordService = new SecurePasswordService();
         passwordMap = new HashMap<>();
         loadPasswords();
     }
@@ -43,9 +48,10 @@ public class PasswordStorage {
         return passwordMap.containsKey(username);
     }
 
-    public void createNewUser(String username, String password) {
+    public void createNewUser(String username, String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
         if (!userExists(username)) {
-            passwordMap.put(username, password);
+            String hashedPass = passwordService.generateSecurePassword(password);
+            passwordMap.put(username, hashedPass);
             savePasswords();
             logger.info("New user created: " + username);
         } else {
@@ -53,9 +59,10 @@ public class PasswordStorage {
         }
     }
 
-    public void updateExistingPassword(String username, String newPassword) {
+    public void updateExistingPassword(String username, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
         if (userExists(username)) {
-            passwordMap.put(username, newPassword);
+            String hashedPass = passwordService.generateSecurePassword(newPassword);
+            passwordMap.put(username, hashedPass);
             savePasswords();
             logger.info("Password updated for user: " + username);
         } else {
