@@ -18,6 +18,7 @@ import java.security.spec.InvalidKeySpecException;
 public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
     private boolean hasAuth = false;
+    private int triesForLogin = 0;
     private boolean running = false;
 
     private static final Logger logger = Logger.getLogger(PrintServer.class.getName());
@@ -236,14 +237,8 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
     @Override
     public String authenticateUser(String user, String password) throws RemoteException {
-        int triesForLogin = 0;
-
         if (hasAuth) {
             return "You're already logged in.";
-        }
-
-        if (!hasAuth && triesForLogin == 3) {
-            return "Sorry bitch, i think you're trying to DDOS our PrintServer \n\n You're getting IP banned.... Sit down";
         }
 
         if (autheticator.authenticate(user, password)) {
@@ -251,9 +246,14 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
             String token = tokenService.generateToken(user);
             tokenStorage.storeToken(user, token);
             logger.info("Login succesful for user: \n" + user);
-            return "Login succesful" + "\nWelcome  " + user + "\n\n" + printCommands();
+            triesForLogin = 0;
+            return "Login succesful" + "\nWelcome  " + user + "\n" + printCommands();
         } else {
             triesForLogin++;
+            if (triesForLogin == 3) {
+                triesForLogin = 0;
+                return "Sorry bitch, i think you're trying to DDOS our PrintServer \n\n You're getting IP banned.... Sit down";
+            }
             return "Login failed...";
         }
     }
