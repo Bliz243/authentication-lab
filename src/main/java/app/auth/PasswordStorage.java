@@ -1,6 +1,6 @@
 package app.auth;
 
-import app.log.AppLogger;
+import app.server.PrintServer;
 import app.util.ConfigManager;
 import java.util.logging.Logger;
 
@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class PasswordStorage {
 
-    private static final Logger logger = AppLogger.getLogger(PasswordStorage.class.getName());
+    private static final Logger logger = Logger.getLogger(PrintServer.class.getName());
     private static final String PASSWORD_FILE = ConfigManager.getInstance().getParameter("passwordFile");
     private Map<String, String> passwordMap;
     private SecurePasswordService passwordService;

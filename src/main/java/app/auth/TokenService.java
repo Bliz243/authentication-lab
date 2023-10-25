@@ -21,9 +21,9 @@ public class TokenService {
             String[] parts = decoded.split(":");
             if (parts.length < 2) return false;
             String username = parts[0];
-            String actualToken = parts[1];
             String storedToken = TokenStorage.getInstance().getToken(username);
-            return storedToken != null && storedToken.equals(actualToken);
+            storedToken= new String(Base64.getDecoder().decode(storedToken));
+            return storedToken != null && storedToken.equals(decoded);
         } catch (Exception e) {
             return false;
         }

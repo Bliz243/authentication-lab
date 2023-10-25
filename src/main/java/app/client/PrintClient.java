@@ -12,8 +12,6 @@ import app.util.ConfigManager;
 public class PrintClient {
 
     private static final Logger logger = Logger.getLogger(PrintClient.class.getName());
-    private static String token = null;
-
     public static void main(String[] args) throws RemoteException {
         try {
             // IPrintServer printServer =(IPrintServer)Naming.lookup("rmi://localhost:6000/PrintServer");
@@ -43,7 +41,7 @@ public class PrintClient {
                     commandArgs = fullCommand.substring(command.length()).trim().split(" ");
                 }
                 try {
-                    cli.executeCommand(command, PrintClient.getToken(), commandArgs);
+                    cli.executeCommand(command, commandArgs);
                 } catch (IndexOutOfBoundsException e) {
                     logger.info("You need to input arguments for this command.");
                 } catch (NumberFormatException e) {
@@ -57,13 +55,5 @@ public class PrintClient {
             logger.severe("Server exception: " + e.toString());
             e.printStackTrace();
         }
-    }
-
-    public static String getToken() {
-        return token;
-    }
-
-    public static void setToken(String newToken) {
-        token = newToken;
     }
 }

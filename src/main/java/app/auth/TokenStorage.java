@@ -20,10 +20,7 @@ public class TokenStorage {
     }
 
     public void storeToken(String username, String token) {
-        String[] parts = token.split(":");
-        if (parts.length < 2) return;
-        String actualToken = parts[1];
-        tokenMap.put(username, actualToken);
+        tokenMap.put(username, token);
         // No need to call saveTokens() since we’re not writing to a file
     }
 
