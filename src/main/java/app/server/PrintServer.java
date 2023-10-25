@@ -3,6 +3,8 @@ package app.server;
 import app.auth.Authenticator;
 import app.auth.PasswordStorage;
 import app.auth.PasswordVerifier;
+import app.auth.TokenService;
+import app.auth.TokenStorage;
 import app.util.ConfigManager;
 
 import java.util.LinkedList;
@@ -19,6 +21,8 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     private boolean running = false;
 
     private static final Logger logger = Logger.getLogger(PrintServer.class.getName());
+    private TokenService tokenService = new TokenService();
+    private TokenStorage tokenStorage = new TokenStorage();
     private static final PasswordStorage passwordStorage = new PasswordStorage();
     private static final PasswordVerifier passwordVerifier = new PasswordVerifier(passwordStorage);
     private static final Authenticator autheticator = new Authenticator(passwordVerifier);
@@ -244,6 +248,8 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
         if (autheticator.authenticate(user, password)) {
             hasAuth = true;
+            String token = tokenService.generateToken(user);
+            tokenStorage.storeToken(user, token);
             logger.info("Login succesful for user: \n" + user);
             return "Login succesful" + "\nWelcome  " + user + "\n\n" + printCommands();
         } else {
