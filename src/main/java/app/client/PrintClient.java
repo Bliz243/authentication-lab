@@ -43,7 +43,7 @@ public class PrintClient {
                     commandArgs = fullCommand.substring(command.length()).trim().split(" ");
                 }
                 try {
-                    cli.executeCommand(command, token, commandArgs);
+                    cli.executeCommand(command, PrintClient.getToken(), commandArgs);
                 } catch (IndexOutOfBoundsException e) {
                     logger.info("You need to input arguments for this command.");
                 } catch (NumberFormatException e) {
