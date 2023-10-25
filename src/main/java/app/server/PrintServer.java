@@ -17,7 +17,6 @@ import java.security.spec.InvalidKeySpecException;
 
 public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
-    private boolean hasAuth = false;
     private int triesForLogin = 0;
     private boolean running = false;
 
@@ -35,10 +34,9 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     }
 
     @Override
-    public String print(String filename, String printer) throws RemoteException {
-        if (!hasAuth) {
-            throw new RemoteException("Unauthorized");
-        }
+    public String print(String filename, String printer, String token) throws RemoteException {
+        if (!tokenService.validateToken(token))
+            return "Unauthorized, invalid session";
 
         if (!running) {
             return "Server not running...";
@@ -49,10 +47,9 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     }
 
     @Override
-    public String queue(String printer) throws RemoteException {
-        if (!hasAuth) {
-            throw new RemoteException("Unauthorized");
-        }
+    public String queue(String printer, String token) throws RemoteException {
+        if (!tokenService.validateToken(token))
+            return "Unauthorized, invalid session";
 
         if (!running) {
             return "Server not running...";
@@ -72,10 +69,9 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     }
 
     @Override
-    public String topQueue(String printer, int jobId) throws RemoteException {
-        if (!hasAuth) {
-            throw new RemoteException("Unauthorized");
-        }
+    public String topQueue(String printer, int jobId, String token) throws RemoteException {
+        if (!tokenService.validateToken(token))
+            return "Unauthorized, invalid session";
 
         if (!running) {
             return "Server not running...";
@@ -99,10 +95,9 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         }
     }
 
-    public String addToQueue(String filename, String printer) throws RemoteException {
-        if (!hasAuth) {
-            throw new RemoteException("Unauthorized");
-        }
+    public String addToQueue(String filename, String printer, String token) throws RemoteException {
+        if (!tokenService.validateToken(token))
+            return "Unauthorized, invalid session";
 
         if (!running) {
             return "Server not running...";
@@ -116,11 +111,9 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     }
 
     @Override
-    public String start() throws RemoteException {
-
-        if (!hasAuth) {
-            throw new RemoteException("Unauthorized");
-        }
+    public String start(String token) throws RemoteException {
+        if (!tokenService.validateToken(token))
+            return "Unauthorized, invalid session";
 
         if (running) {
             return "Server already running...";
@@ -132,10 +125,10 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     }
 
     @Override
-    public String stop() throws RemoteException {
-        if (!hasAuth) {
-            throw new RemoteException("Unauthorized");
-        }
+    public String stop(String token) throws RemoteException {
+        if (!tokenService.validateToken(token))
+            return "Unauthorized, invalid session";
+
         running = false;
 
         logger.info("Print server stopped.");
@@ -143,10 +136,9 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     }
 
     @Override
-    public String restart() throws RemoteException, InterruptedException {
-        if (!hasAuth) {
-            throw new RemoteException("Unauthorized");
-        }
+    public String restart(String token) throws RemoteException, InterruptedException {
+        if (!tokenService.validateToken(token))
+            return "Unauthorized, invalid session";
 
         if (!running) {
             return "Server not running...";
@@ -163,10 +155,9 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     }
 
     @Override
-    public String status(String printer) throws RemoteException {
-        if (!hasAuth) {
-            throw new RemoteException("Unauthorized");
-        }
+    public String status(String printer, String token) throws RemoteException {
+        if (!tokenService.validateToken(token))
+            return "Unauthorized, invalid session";
 
         if (!running) {
             return "Server not running...";
@@ -176,10 +167,10 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     }
 
     @Override
-    public String readConfig(String parameter) throws RemoteException {
-        if (!hasAuth) {
-            throw new RemoteException("Unauthorized");
-        }
+    public String readConfig(String parameter, String token) throws RemoteException {
+        if (!tokenService.validateToken(token))
+            return "Unauthorized, invalid session";
+
         if (!running) {
             return "Server not running...";
         }
@@ -189,11 +180,9 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     }
 
     @Override
-    public String setConfig(String parameter, String value) throws RemoteException {
-
-        if (!hasAuth) {
-            throw new RemoteException("Unauthorized");
-        }
+    public String setConfig(String parameter, String value, String token) throws RemoteException {
+        if (!tokenService.validateToken(token))
+            return "Unauthorized, invalid session";
 
         if (!running) {
             return "Server not running...";
@@ -205,11 +194,10 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
     // TODO Update the available command list
     @Override
-    public String printCommands() throws RemoteException {
-
+    public String printCommands(String token) throws RemoteException {
         StringBuilder sb = new StringBuilder();
         sb.append("\nAvailable commands:\n");
-        if (!hasAuth) {
+        if (!tokenService.validateToken(token)) {
             sb.append("authenticate <username> <password>: Authenticate user");
             sb.append("help: To see available commands");
             return sb.toString();
@@ -237,17 +225,13 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
     @Override
     public String authenticateUser(String user, String password) throws RemoteException {
-        if (hasAuth) {
-            return "You're already logged in.";
-        }
 
         if (autheticator.authenticate(user, password)) {
-            hasAuth = true;
             String token = tokenService.generateToken(user);
             tokenStorage.storeToken(user, token);
-            logger.info("Login succesful for user: \n" + user);
+            logger.info("Login succesful for user: \n" + user + "\n" + token);
             triesForLogin = 0;
-            return "Login succesful" + "\nWelcome  " + user + "\n" + printCommands();
+            return "Login succesful" + "\nWelcome  " + user + "\n" + printCommands(token) + " " + token;
         } else {
             triesForLogin++;
             if (triesForLogin == 3) {
@@ -259,11 +243,10 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     }
 
     @Override
-    public String createUser(String newUser, String password)
+    public String createUser(String newUser, String password, String token)
             throws RemoteException, NoSuchAlgorithmException, InvalidKeySpecException {
-        if (!hasAuth) {
-            throw new RemoteException("Unauthorized");
-        }
+        if (!tokenService.validateToken(token))
+            return "Unauthorized, invalid session";
 
         if (!running) {
             return "Server not running...";
@@ -275,11 +258,10 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     }
 
     @Override
-    public String updatePassword(String user, String password)
+    public String updatePassword(String user, String password, String token)
             throws RemoteException, NoSuchAlgorithmException, InvalidKeySpecException {
-        if (!hasAuth) {
-            throw new RemoteException("Unauthorized");
-        }
+        if (!tokenService.validateToken(token))
+            return "Unauthorized, invalid session";
 
         if (!running) {
             return "Server not running...";
@@ -291,8 +273,10 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     }
 
     @Override
-    public String logout() throws RemoteException {
-        hasAuth = false;
-        return "Logging out";
+    public String logout(String token) throws RemoteException {
+        if(token == null)
+            return "Not logged in";
+        else
+            return "Logging out";
     };
 }

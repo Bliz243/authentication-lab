@@ -12,8 +12,12 @@ public class TokenStorage {
     private static final String TOKEN_FILE_PATH = ConfigManager.getInstance().getParameter("tokenFile");
     private Map<String, String> tokenMap = new HashMap<>();
 
-    public TokenStorage() {
-        loadTokens();
+  public TokenStorage() {
+        if (TOKEN_FILE_PATH != null && !TOKEN_FILE_PATH.trim().isEmpty()) {
+            loadTokens();
+        } else {
+            System.err.println("Token file path is not set. Please configure the tokenFile parameter.");
+        }
     }
 
     public static TokenStorage getInstance() {
@@ -21,16 +25,21 @@ public class TokenStorage {
     }
 
     private void loadTokens() {
-        try (BufferedReader reader = new BufferedReader(new FileReader(TOKEN_FILE_PATH))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(":", 2);
-                if (parts.length >= 2) {
-                    String username = parts[0];
-                    String token = parts[1];
-                    tokenMap.put(username, token);
+        File tokenFile = new File(TOKEN_FILE_PATH);
+        if (!tokenFile.exists()) {
+            try {
+                boolean created = tokenFile.createNewFile();
+                if (!created) {
+                    System.err.println("Failed to create token file at " + TOKEN_FILE_PATH);
                 }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            return; // File is empty, no tokens to load
+        }
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(tokenFile))) {
+            // ... existing code ...
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -41,9 +50,13 @@ public class TokenStorage {
     }
 
     public void storeToken(String username, String token) {
-        tokenMap.put(username, token);
+        String[] parts = token.split(":");
+        if (parts.length < 2) return;
+        String actualToken = parts[1];
+        tokenMap.put(username, actualToken);
         saveTokens();
     }
+
 
     public void removeToken(String username) {
         tokenMap.remove(username);
