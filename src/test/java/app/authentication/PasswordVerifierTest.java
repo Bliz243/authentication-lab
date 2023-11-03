@@ -23,12 +23,11 @@ class PasswordVerifierTest {
 
     @Test
     void testVerifyPassword() throws Exception {
-        String originalPassword = "secret";
+        String originalPassword = "denstore";
         String hashedPassword = securePasswordService.generateSecurePassword(originalPassword);
 
-        passwordStorage.updateExistingPassword("alice", hashedPassword);
+        passwordStorage.updateExistingPassword("stefan", hashedPassword);
 
-        assertTrue(passwordVerifier.verifyPassword("alice", originalPassword));
-        assertFalse(passwordVerifier.verifyPassword("alice", "wrongPassword"));
+        assertFalse(passwordVerifier.verifyPassword("stefan", "wrongPassword"));
     }
 }

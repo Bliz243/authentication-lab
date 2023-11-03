@@ -28,6 +28,11 @@ class PasswordStorageTest {
     }
 
     @Test
+    void storePassword() {
+        
+    }
+
+    @Test
     void testUpdatePassword() throws NoSuchAlgorithmException, InvalidKeySpecException {
         passwordStorage.updateExistingPassword("bob", "newSecret");
         assertTrue(passwordVerifier.verifyPassword("bob", "newSecret"));

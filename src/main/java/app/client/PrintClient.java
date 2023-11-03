@@ -15,8 +15,8 @@ public class PrintClient {
     public static void main(String[] args) throws RemoteException {
         try {
             // IPrintServer printServer =(IPrintServer)Naming.lookup("rmi://localhost:6000/PrintServer");
-            System.setProperty("javax.net.ssl.trustStore", ConfigManager.getInstance().getParameter("clientTrust"));
-            System.setProperty("javax.net.ssl.trustStorePassword", "keystore");
+            /* System.setProperty("javax.net.ssl.trustStore", ConfigManager.getInstance().getParameter("clientTrust"));
+            System.setProperty("javax.net.ssl.trustStorePassword", "keystore"); */
 
 
             IPrintServer printServer = (IPrintServer) Naming.lookup("rmi://localhost:5000/PrintServer");

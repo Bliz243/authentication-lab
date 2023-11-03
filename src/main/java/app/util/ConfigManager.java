@@ -16,7 +16,6 @@ public class ConfigManager {
         loadConfig();
     }
 
-    // Static instance holder
     private static class Holder {
         private static final ConfigManager INSTANCE = new ConfigManager("config.properties");
     }
@@ -35,7 +34,6 @@ public class ConfigManager {
         e.printStackTrace();
     }
 }
-
 
     public String getParameter(String parameter) {
         return properties.getProperty(parameter);

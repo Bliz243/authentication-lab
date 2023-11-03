@@ -1,4 +1,0 @@
-app/authentication/SecurePasswordServiceTest.class
-app/authentication/PasswordVerifierTest.class
-app/authentication/PasswordStorageTest.class
-app/authentication/AuthenticatorTest.class
