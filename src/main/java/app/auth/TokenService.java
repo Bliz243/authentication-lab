@@ -19,10 +19,11 @@ public class TokenService {
         try {
             String decoded = new String(Base64.getDecoder().decode(token));
             String[] parts = decoded.split(":");
-            if (parts.length < 2) return false;
+            if (parts.length < 2)
+                return false;
             String username = parts[0];
             String storedToken = TokenStorage.getInstance().getToken(username);
-            storedToken= new String(Base64.getDecoder().decode(storedToken));
+            storedToken = new String(Base64.getDecoder().decode(storedToken));
             return storedToken != null && storedToken.equals(decoded);
         } catch (Exception e) {
             return false;
@@ -33,11 +34,18 @@ public class TokenService {
         try {
             String decoded = new String(Base64.getDecoder().decode(oldToken));
             String[] parts = decoded.split(":");
-            if (parts.length < 2) return null;
+            if (parts.length < 2)
+                return null;
             String username = parts[0];
             return generateToken(username);
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public String getUsername(String token) {
+        String decoded = new String(Base64.getDecoder().decode(token));
+        String[] parts = decoded.split(":");
+        return parts[0];
     }
 }
