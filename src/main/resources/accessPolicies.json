@@ -1,0 +1,56 @@
+{
+    "policies": {
+        "super_admin": {
+            "members": [
+                "alice"
+            ],
+            "permissions": [
+                "startServer",
+                "stopServer",
+                "restartServer",
+                "status",
+                "readConfig",
+                "setConfig",
+                "print",
+                "queue",
+                "topQueue"
+            ]
+        },
+        "technician": {
+            "members": [
+                "bob"
+            ],
+            "permissions": [
+                "startServer",
+                "stopServer",
+                "restartServer",
+                "status",
+                "readConfig",
+                "setConfig"
+            ]
+        },
+        "powerUser": {
+            "members": [
+                "cecilia"
+            ],
+            "permissions": [
+                "print",
+                "queue",
+                "topQueue",
+                "restartServer"
+            ]
+        },
+        "user": {
+            "members": [
+                "david",
+                "erica",
+                "fred",
+                "george"
+            ],
+            "permissions": [
+                "print",
+                "queue"
+            ]
+        }
+    }
+}

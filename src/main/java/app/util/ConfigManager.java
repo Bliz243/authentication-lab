@@ -6,13 +6,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class ConfigManager {
     private Properties properties;
     private String configFilePath;
+    private ObjectMapper objectMapper;
 
     private ConfigManager(String configFilePath) {
         this.configFilePath = configFilePath;
         this.properties = new Properties();
+        this.objectMapper = new ObjectMapper();
         loadConfig();
     }
 
@@ -26,16 +30,15 @@ public class ConfigManager {
     }
 
     private void loadConfig() {
-    try (InputStream inStream = this.getClass().getClassLoader().getResourceAsStream(configFilePath)) {
-        if (inStream == null) {
-            throw new FileNotFoundException("Resource file not found: " + configFilePath);
+        try (InputStream inStream = this.getClass().getClassLoader().getResourceAsStream(configFilePath)) {
+            if (inStream == null) {
+                throw new FileNotFoundException("Resource file not found: " + configFilePath);
+            }
+            properties.load(inStream);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        properties.load(inStream);
-    } catch (IOException e) {
-        e.printStackTrace();
     }
-}
-
 
     public String getParameter(String parameter) {
         return properties.getProperty(parameter);
