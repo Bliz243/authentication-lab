@@ -98,6 +98,16 @@ public class PasswordService implements IPasswordService {
         }
     }
 
+    public void deleteUser(String username) {
+        if (userExists(username)) {
+            passwordMap.remove(username);
+            savePasswords();
+            logger.info("User deleted: " + username);
+        } else {
+            logger.warning("Cannot delete user that does not exist: " + username);
+        }
+    }
+
     private void savePasswords() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(PASSWORD_FILE))) {
             for (Map.Entry<String, String> entry : passwordMap.entrySet()) {

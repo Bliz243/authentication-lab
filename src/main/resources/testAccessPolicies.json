@@ -1,1 +1,68 @@
-{"powerUser":{"members":["jan","cecilia"],"permissions":["print","queue","topqueue","restart"]},"super_admin":{"members":["alice"],"permissions":["start","stop","restart","status","readconfig","setconfig","print","queue","topqueue","updatepassword","createuser"]},"technician":{"members":["bob"],"permissions":["start","stop","restart","status","readconfig","setconfig"]},"user":{"members":["stefan","david","erica","fred","george"],"permissions":["print","queue"]}}
+{
+    "powerUser": {
+        "members": [
+            "jan",
+            "cecilia"
+        ],
+        "permissions": [
+            "print",
+            "queue",
+            "topqueue",
+            "restart"
+        ]
+    },
+    "super_admin": {
+        "members": [
+            "alice"
+        ],
+        "permissions": [
+            "start",
+            "stop",
+            "restart",
+            "status",
+            "readconfig",
+            "setconfig",
+            "print",
+            "queue",
+            "topqueue",
+            "updatepassword",
+            "createuser",
+            "new_permission"
+        ]
+    },
+    "technician": {
+        "members": [
+            "bob"
+        ],
+        "permissions": [
+            "start",
+            "stop",
+            "restart",
+            "status",
+            "readconfig",
+            "setconfig"
+        ]
+    },
+    "newRole": {
+        "members": [
+            "testnewrole"
+        ],
+        "permissions": [
+            "newpermission1",
+            "newpermission2"
+        ]
+    },
+    "user": {
+        "members": [
+            "stefan",
+            "david",
+            "erica",
+            "fred",
+            "george"
+        ],
+        "permissions": [
+            "print",
+            "queue"
+        ]
+    }
+}

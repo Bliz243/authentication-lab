@@ -76,5 +76,15 @@ class PasswordServiceTest {
         assertFalse(passwordService.userExists("nonexistentuser"));
     }
 
+    @Test
+    public void testDeleteUser() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String username = "deletableUser";
+        String password = "password";
+        passwordService.createNewUser(username, password);
+        assertTrue(passwordService.userExists(username), "User should exist after creation.");
 
+        // Delete the user and verify deletion
+        passwordService.deleteUser(username);
+        assertFalse(passwordService.userExists(username), "User should not exist after deletion.");
+    }
 }

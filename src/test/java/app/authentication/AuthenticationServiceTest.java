@@ -10,6 +10,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -107,5 +109,44 @@ public class AuthenticationServiceTest {
         assertTrue(authenticationService.authenticate("stefan", "denstore"));
         assertFalse(authenticationService.authenticate("alice", "wrongpassword"));
         assertFalse(authenticationService.authenticate("nonexistentuser", "password123"));
+    }
+
+    @Test
+    public void testCreateNewRole() throws IOException {
+        String newRole = "newRole";
+    List<String> permissions = Arrays.asList("newpermission1", "newpermission2");
+
+    String existingUser = "testnewrole";
+
+    authenticationService.createNewRole(newRole, permissions);
+    authenticationService.setUserRole(existingUser, newRole);
+
+    for (String permission : permissions) {
+        assertTrue(authenticationService.hasPermission(existingUser, permission),
+                    "User should have '" + permission + "' permission after being assigned to the new role.");
+    }
+}
+
+    @Test
+    public void testDeleteRole() throws IOException {
+        String roleToDelete = "deletableRole";
+        // Assume roleToDelete exists
+        authenticationService.createNewRole(roleToDelete, List.of("perm1", "perm2"));
+
+        authenticationService.deleteRole(roleToDelete);
+
+        assertFalse(authenticationService.getListOfRoles().contains(roleToDelete),
+                    "Role should not exist after deletion.");
+    }
+
+    @Test
+    public void testAddPermissionToRole() throws IOException {
+        String role = "super_admin";
+        String newPermission = "new_permission";
+
+        authenticationService.addPermissionToRole(role, newPermission);
+
+        assertTrue(authenticationService.hasPermission("alice", newPermission),
+                "Super admin should have the newly added permission.");
     }
 }

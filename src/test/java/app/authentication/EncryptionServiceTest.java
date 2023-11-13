@@ -7,7 +7,6 @@ import app.auth.EncryptionService;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Arrays;
 
 import static org.junit.jupiter.api.Assertions.*;
 

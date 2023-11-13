@@ -45,7 +45,7 @@ public class PolicyConfig {
         private List<String> members;
         private List<String> permissions;
 
-        protected RolePolicy(List<String> members, List<String> permissions) {
+        public RolePolicy(List<String> members, List<String> permissions) {
             this.members = members != null ? members : new ArrayList<>();
             this.permissions = permissions;
         }

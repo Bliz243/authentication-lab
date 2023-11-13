@@ -15,4 +15,6 @@ public interface IPasswordService {
             throws NoSuchAlgorithmException, InvalidKeySpecException;
 
     boolean verifyPassword(String username, String providedPassword);
+
+    void deleteUser(String username);
 }

@@ -1,6 +1,8 @@
 package app.auth;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
@@ -13,7 +15,7 @@ public class AuthenticationService implements IAuthenticationService {
 
     private IPasswordService passwordService;
     private static final Logger logger = Logger.getLogger(AuthenticationService.class.getName());
-    private PolicyConfig policies;
+    public PolicyConfig policies;
     private String accessFileParameter = "accessPolicies";
 
     public AuthenticationService(IPasswordService passwordService) throws IOException {
@@ -28,7 +30,6 @@ public class AuthenticationService implements IAuthenticationService {
     }
 
     public boolean hasPermission(String user, String operation) {
-        // Check if the user has the operation in their direct permissions
         for (Map.Entry<String, PolicyConfig.RolePolicy> entry : policies.getPolicies().entrySet()) {
             PolicyConfig.RolePolicy rolePolicy = entry.getValue();
 
@@ -37,8 +38,6 @@ public class AuthenticationService implements IAuthenticationService {
                 return true;
             }
         }
-
-        // The user does not have permission
         return false;
     }
 
@@ -54,6 +53,45 @@ public class AuthenticationService implements IAuthenticationService {
         policies.getPolicies().get(role).getMembers().add(user);
 
         ConfigManager.getInstance().writeJson(policies, accessFileParameter);
+    }
+
+     public boolean createNewRole(String role, List<String> permissions) throws IOException {
+        if (policies.getPolicies().containsKey(role)) {
+            return false;
+        }
+
+        policies.getPolicies().put(role, new PolicyConfig.RolePolicy(new ArrayList<>(), permissions));
+        ConfigManager.getInstance().writeJson(policies, accessFileParameter);
+        logger.info(String.format("New role '%s' created.", role));
+        return true;
+    }
+
+    public void deleteRole(String role) throws IOException {
+        if (policies.getPolicies().containsKey(role)) {
+            policies.getPolicies().remove(role);
+            ConfigManager.getInstance().writeJson(policies, accessFileParameter);
+            logger.info(String.format("Role '%s' deleted.", role));
+        } else {
+            throw new IllegalArgumentException("The role does not exist: " + role);
+        }
+    }
+
+    public List<String> getListOfRoles() {
+        return new ArrayList<>(policies.getPolicies().keySet());
+    }
+
+    public void addPermissionToRole(String role, String permission) throws IOException {
+        if (!policies.getPolicies().containsKey(role)) {
+            throw new IllegalArgumentException("The role does not exist: " + role);
+        }
+        PolicyConfig.RolePolicy rolePolicy = policies.getPolicies().get(role);
+        if (!rolePolicy.getPermissions().contains(permission)) {
+            rolePolicy.getPermissions().add(permission);
+            ConfigManager.getInstance().writeJson(policies, accessFileParameter);
+            logger.info(String.format("Permission '%s' added to role '%s'.", permission, role));
+        } else {
+            logger.warning(String.format("Permission '%s' already exists in role '%s'.", permission, role));
+        }
     }
 
     public boolean authenticate(String username, String password) {

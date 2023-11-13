@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 
 import app.server.IPrintServer;
 import app.util.CommandLineInterface;
-import app.util.ConfigManager;
 
 public class PrintClient {
 
