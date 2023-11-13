@@ -1,47 +1,71 @@
 package app.authentication;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import app.auth.EncryptionService;
 import app.auth.PasswordService;
 import app.auth.interfaces.IEncryptionService;
 import app.util.ConfigManager;
 
-import java.io.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class PasswordServiceTest {
+class PasswordServiceTest {
     private PasswordService passwordService;
+    private IEncryptionService EncryptionService;
+    private String passwordFilePath;
 
     @BeforeEach
-    public void setUp() throws IOException {
-        // Create a temporary file for testing
-        File tempFile = File.createTempFile("passwordsTest", ".txt");
-        tempFile.deleteOnExit();
+    public void setUp() throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+        EncryptionService = new EncryptionService();
+        passwordFilePath = "passwordFileTest";
+        passwordService = new PasswordService(EncryptionService, passwordFilePath);
 
-        // Write test data to the file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
-            writer.write("alice:password1");
-            writer.newLine();
-            writer.write("bob:password2");
-            writer.newLine();
-            writer.write("charlie:password3");
-            writer.newLine();
-        }
+        Files.deleteIfExists(Paths.get(ConfigManager.getInstance().getParameter(passwordFilePath)));
+        Files.createFile(Paths.get(ConfigManager.getInstance().getParameter(passwordFilePath)));
 
-        // Create a new PasswordService instance for each test
-        IEncryptionService encryptionService = new EncryptionService();
-        ConfigManager.getInstance().setParameter("passwordFile", tempFile.getAbsolutePath());
-        passwordService = new PasswordService(encryptionService);
+        String username = "alice";
+        String password = "password";
+        passwordService.createNewUser(username, password);
+
+    }
+
+    @AfterEach
+    public void tearDown() throws IOException {
+        // Clean up the test password file after each test
+        Files.deleteIfExists(Paths.get(passwordFilePath));
+        Files.createFile(Paths.get(passwordFilePath));
+    }
+
+    @Test
+    public void testCreateNewUser() throws NoSuchAlgorithmException, InvalidKeySpecException, IOException {
+        String username = "david";
+        String password = "password4";
+
+        assertFalse(passwordService.userExists(username), "User should not exist before creation.");
+        passwordService.createNewUser(username, password);
+        assertTrue(passwordService.userExists(username), "User should exist after creation.");
+        assertTrue(passwordService.verifyPassword(username, password), "User should be verifiable after creation.");
+    }
+
+    @Test
+    public void testUpdateExistingPassword() throws NoSuchAlgorithmException, InvalidKeySpecException {
+        String username = "alice";
+        String newPassword = "newpassword";
+        passwordService.updateExistingPassword(username, newPassword);
+        assertTrue(passwordService.verifyPassword(username, newPassword));
     }
 
     @Test
     public void testVerifyPassword() {
-        assertTrue(passwordService.verifyPassword("alice", "password1"));
+        assertTrue(passwordService.verifyPassword("alice", "password"));
         assertFalse(passwordService.verifyPassword("alice", "wrongpassword"));
         assertFalse(passwordService.verifyPassword("nonexistentuser", "password"));
     }
@@ -52,20 +76,5 @@ public class PasswordServiceTest {
         assertFalse(passwordService.userExists("nonexistentuser"));
     }
 
-    @Test
-    public void testCreateNewUser() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        String username = "david";
-        String password = "password4";
-        passwordService.createNewUser(username, password);
-        assertTrue(passwordService.verifyPassword(username, password));
-        assertTrue(passwordService.userExists(username));
-    }
 
-    @Test
-    public void testUpdateExistingPassword() throws NoSuchAlgorithmException, InvalidKeySpecException {
-        String username = "alice";
-        String newPassword = "newpassword";
-        passwordService.updateExistingPassword(username, newPassword);
-        assertTrue(passwordService.verifyPassword(username, newPassword));
-    }
 }

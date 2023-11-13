@@ -103,8 +103,8 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void testAuthenticate() {
-        assertTrue(authenticationService.authenticate("alice", "password123"));
+    public void testAuthenticate() {
+        assertTrue(authenticationService.authenticate("stefan", "denstore"));
         assertFalse(authenticationService.authenticate("alice", "wrongpassword"));
         assertFalse(authenticationService.authenticate("nonexistentuser", "password123"));
     }
