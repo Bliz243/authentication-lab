@@ -13,6 +13,7 @@ import app.auth.interfaces.IAuthenticationService;
 import app.auth.interfaces.IEncryptionService;
 import app.auth.interfaces.IPasswordService;
 import app.auth.interfaces.ITokenService;
+import app.server.interfaces.IPrintServer;
 
 public class PrintServerRun {
 

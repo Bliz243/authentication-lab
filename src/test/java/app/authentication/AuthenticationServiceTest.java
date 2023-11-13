@@ -13,7 +13,7 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AuthenticationServiceTest {
+class AuthenticationServiceTest {
     private AuthenticationService authenticationService;
     private IEncryptionService encrypt;
     private IPasswordService passwordService;
@@ -27,7 +27,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testSuperAdminPermissions() {
+    void testSuperAdminPermissions() {
         // Test that Alice, who is a super_admin, has all permissions
         String[] superAdminPermissions = { "start", "stop", "restart", "status", "readconfig", "setconfig", "print",
                 "queue", "topqueue" };
@@ -38,7 +38,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testTechnicianPermissions() {
+    void testTechnicianPermissions() {
         // Test that Bob, who is a technician, has the correct permissions
         assertTrue(authenticationService.hasPermission("bob", "start"));
         assertTrue(authenticationService.hasPermission("bob", "status"));
@@ -47,7 +47,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testPowerUserPermissions() {
+    void testPowerUserPermissions() {
         // Test that Cecilia, who is a powerUser, has the correct permissions
         assertTrue(authenticationService.hasPermission("cecilia", "print"));
         assertTrue(authenticationService.hasPermission("cecilia", "queue"));
@@ -56,7 +56,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testUserPermissions() {
+    void testUserPermissions() {
         // Test that David, who is a user, has the correct permissions
         assertTrue(authenticationService.hasPermission("david", "print"));
         assertTrue(authenticationService.hasPermission("david", "queue"));
@@ -65,7 +65,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testSetUserRole() throws IOException {
+    void testSetUserRole() throws IOException {
         String user = "cecilia";
         String newRole = "user";
         // Set user role to 'user'
@@ -89,7 +89,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testSetUserRole_RoleDoesNotExist() {
+    void testSetUserRole_RoleDoesNotExist() {
         String user = "newUser";
         String nonExistentRole = "nonExistentRole";
         Exception exception = assertThrows(IllegalArgumentException.class, () -> {
@@ -103,7 +103,7 @@ public class AuthenticationServiceTest {
     }
 
     @Test
-    public void testAuthenticate() {
+    void testAuthenticate() {
         assertTrue(authenticationService.authenticate("alice", "password123"));
         assertFalse(authenticationService.authenticate("alice", "wrongpassword"));
         assertFalse(authenticationService.authenticate("nonexistentuser", "password123"));

@@ -4,6 +4,7 @@ import app.auth.TokenService;
 import app.auth.interfaces.IAuthenticationService;
 import app.auth.interfaces.IPasswordService;
 import app.auth.interfaces.ITokenService;
+import app.server.interfaces.IPrintServer;
 import app.util.ConfigManager;
 
 import java.util.LinkedList;
@@ -25,14 +26,14 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     private String serverNotRunningMsg = "Server not running.";
 
     private String successMsg = "200";
-    private final ITokenService tokenService;
-    private final IPasswordService passwordService;
-    private final IAuthenticationService authenticationService;
-    private LinkedList<PrintJob> printQueue = new LinkedList<>();
+    private transient ITokenService tokenService;
+    private transient IPasswordService passwordService;
+    private transient IAuthenticationService authenticationService;
+    private transient LinkedList<PrintJob> printQueue = new LinkedList<>();
     private int nextJobId = 1;
 
     public PrintServer(IPasswordService passwordService, ITokenService tokenService,
-            IAuthenticationService authenticationService) throws RemoteException, IOException {
+            IAuthenticationService authenticationService) throws IOException {
         super();
         this.tokenService = tokenService;
         this.passwordService = passwordService;
@@ -215,7 +216,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     public String authenticateUser(String user, String password) throws RemoteException {
         if (authenticationService.authenticate(user, password)) {
             String token = tokenService.generateToken(user);
-            TokenService.getInstance().storeToken(user, token);
+            tokenService.storeToken(user, token);
             logger.info("Login succesful for user: \n" + user + "\n" + token);
             triesForLogin = 0;
             return "Login succesful" + "\nWelcome  " + user + "\n" + printCommands(token) + " " + token;

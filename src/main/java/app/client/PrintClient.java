@@ -5,7 +5,7 @@ import java.rmi.RemoteException;
 import java.util.Scanner;
 import java.util.logging.Logger;
 
-import app.server.IPrintServer;
+import app.server.interfaces.IPrintServer;
 import app.util.CommandLineInterface;
 import app.util.ConfigManager;
 
