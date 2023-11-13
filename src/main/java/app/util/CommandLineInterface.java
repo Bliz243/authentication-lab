@@ -6,7 +6,7 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Map;
 
-import app.server.IPrintServer;
+import app.server.interfaces.IPrintServer;
 
 public class CommandLineInterface {
 
@@ -96,6 +96,10 @@ public class CommandLineInterface {
         commandsMap.put("help", (token, args) -> {
             print(printServer.printCommands(token));
         });
+        commandsMap.put("updateUserRole", (token, args) -> {
+            print(printServer.updateUserPermissions(args[0], args[1], token));
+        });
+
     }
 
     public void executeCommand(String command, String... args) {

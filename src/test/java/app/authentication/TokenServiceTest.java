@@ -12,7 +12,7 @@ public class TokenServiceTest {
 
     @BeforeEach
     public void setUp() {
-        tokenService = TokenService.getInstance();
+        tokenService = new TokenService();
     }
 
     @Test

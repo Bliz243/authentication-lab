@@ -4,6 +4,7 @@ import app.auth.TokenService;
 import app.auth.interfaces.IAuthenticationService;
 import app.auth.interfaces.IPasswordService;
 import app.auth.interfaces.ITokenService;
+import app.server.interfaces.IPrintServer;
 import app.util.ConfigManager;
 
 import java.util.LinkedList;
@@ -25,14 +26,14 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     private String serverNotRunningMsg = "Server not running.";
 
     private String successMsg = "200";
-    private final ITokenService tokenService;
-    private final IPasswordService passwordService;
-    private final IAuthenticationService authenticationService;
-    private LinkedList<PrintJob> printQueue = new LinkedList<>();
+    private transient ITokenService tokenService;
+    private transient IPasswordService passwordService;
+    private transient IAuthenticationService authenticationService;
+    private transient LinkedList<PrintJob> printQueue = new LinkedList<>();
     private int nextJobId = 1;
 
     public PrintServer(IPasswordService passwordService, ITokenService tokenService,
-            IAuthenticationService authenticationService) throws RemoteException, IOException {
+            IAuthenticationService authenticationService) throws IOException {
         super();
         this.tokenService = tokenService;
         this.passwordService = passwordService;
@@ -182,7 +183,6 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
     @Override
     public String printCommands(String token) throws RemoteException {
-        // TODO Update the available command list
         StringBuilder sb = new StringBuilder();
         sb.append("\nAvailable commands:\n");
         if (!tokenService.validateToken(token)) {
@@ -190,32 +190,16 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
             sb.append("help: To see available commands");
             return sb.toString();
         }
-        if (!running) {
-            sb.append("start: Starts the print server.\n");
-            return sb.toString();
-        }
-        sb.append("stop: Stops the print server.\n");
-        sb.append("restart: Restarts the print server.\n");
-        sb.append("print <filename> <printer>: Prints the file.\n");
-        sb.append("queue <printer>: Shows print queue. \n");
-        sb.append("topQueue <printer> <job>: Moves job to top of queue.\n");
-        sb.append("addToQueue <filename> <printer>: Adds to printer queue.\n");
-        sb.append("status <printer>: Shows printer status. \n");
-        sb.append("readConfig <parameter>: Reads configuration.\n");
-        sb.append("setConfig <paramter> <value>: Sets configuration.\n");
-        sb.append("createUser <username> <password>: Creates a new user\n");
-        sb.append("updatePassword <username> <password>: Update user password\n");
-        sb.append("logout: Logs current user out\n");
 
         logger.info("Returned commands");
-        return sb.toString();
+        return authenticationService.getAvailableCommands(tokenService.getUsername(token));
     }
 
     @Override
     public String authenticateUser(String user, String password) throws RemoteException {
         if (authenticationService.authenticate(user, password)) {
             String token = tokenService.generateToken(user);
-            TokenService.getInstance().storeToken(user, token);
+            tokenService.storeToken(user, token);
             logger.info("Login succesful for user: \n" + user + "\n" + token);
             triesForLogin = 0;
             return "Login succesful" + "\nWelcome  " + user + "\n" + printCommands(token) + " " + token;

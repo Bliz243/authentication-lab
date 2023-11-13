@@ -13,6 +13,7 @@ import app.auth.interfaces.IAuthenticationService;
 import app.auth.interfaces.IEncryptionService;
 import app.auth.interfaces.IPasswordService;
 import app.auth.interfaces.ITokenService;
+import app.server.interfaces.IPrintServer;
 
 public class PrintServerRun {
 
@@ -20,14 +21,6 @@ public class PrintServerRun {
 
     public static void main(String args[]) {
         try {
-            /*
-             * System.setProperty("javax.net.ssl.keyStore",
-             * ConfigManager.getInstance().getParameter("keyStore") );
-             * System.setProperty("javax.net.ssl.keyStorePassword", "keystore");
-             * 
-             * SslRMIClientSocketFactory csf = new SslRMIClientSocketFactory();
-             * SslRMIServerSocketFactory ssf = new SslRMIServerSocketFactory();
-             */
 
             IEncryptionService encryptionService = new EncryptionService();
             ITokenService tokenService = new TokenService();
@@ -41,6 +34,7 @@ public class PrintServerRun {
 
             LocateRegistry.createRegistry(5000);
             Naming.rebind("rmi://localhost:5000/PrintServer", stub);
+            logger.info("Started RMI server");
 
         } catch (Exception e) {
             logger.severe("Server exception: " + e.toString());
