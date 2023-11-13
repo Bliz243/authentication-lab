@@ -1,9 +1,11 @@
 package app.util;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Properties;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,6 +49,10 @@ public class ConfigManager {
     public void setParameter(String parameter, String value) {
         properties.setProperty(parameter, value);
         saveConfig();
+    }
+
+    public PolicyConfig readJson() throws IOException {
+        return objectMapper.readValue(new File("accessPolicies"), PolicyConfig.class);
     }
 
     private void saveConfig() {
