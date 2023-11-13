@@ -1,27 +1,53 @@
 package app.auth;
 
-import app.server.PrintServer;
-import app.util.ConfigManager;
-import java.util.logging.Logger;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
-public class PasswordStorage {
+import app.auth.interfaces.IEncryptionService;
+import app.auth.interfaces.IPasswordService;
+import app.server.PrintServer;
+import app.util.ConfigManager;
 
+public class PasswordService implements IPasswordService {
     private static final Logger logger = Logger.getLogger(PrintServer.class.getName());
-    private static final String PASSWORD_FILE = ConfigManager.getInstance().getParameter("passwordFile");
+    private String PASSWORD_FILE;
     private Map<String, String> passwordMap;
-    private SecurePasswordService passwordService;
+    private IEncryptionService encryptionService;
 
-
-    public PasswordStorage() {
-        passwordService = new SecurePasswordService();
+    public PasswordService(IEncryptionService encryptionService) {
+        this.PASSWORD_FILE = ConfigManager.getInstance().getParameter("passwordFile");
+        this.encryptionService = encryptionService;
         passwordMap = new HashMap<>();
         loadPasswords();
+    }
+
+    public PasswordService(IEncryptionService encryptionService, String setFileParamter) {
+        this.PASSWORD_FILE = ConfigManager.getInstance().getParameter(setFileParamter);
+        this.encryptionService = encryptionService;
+        passwordMap = new HashMap<>();
+        loadPasswords();
+    }
+
+    public boolean verifyPassword(String username, String providedPassword) {
+        String storedPasswordHash = getPassword(username);
+        if (storedPasswordHash == null) {
+            return false;
+        }
+
+        boolean[] requiresUpdate = new boolean[1];
+        try {
+            return encryptionService.verifyPassword(providedPassword, storedPasswordHash, requiresUpdate);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private void loadPasswords() {
@@ -48,9 +74,10 @@ public class PasswordStorage {
         return passwordMap.containsKey(username);
     }
 
-    public void createNewUser(String username, String password) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public void createNewUser(String username, String password)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
         if (!userExists(username)) {
-            String hashedPass = passwordService.generateSecurePassword(password);
+            String hashedPass = encryptionService.generateSecurePassword(password);
             passwordMap.put(username, hashedPass);
             savePasswords();
             logger.info("New user created: " + username);
@@ -59,9 +86,10 @@ public class PasswordStorage {
         }
     }
 
-    public void updateExistingPassword(String username, String newPassword) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public void updateExistingPassword(String username, String newPassword)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
         if (userExists(username)) {
-            String hashedPass = passwordService.generateSecurePassword(newPassword);
+            String hashedPass = encryptionService.generateSecurePassword(newPassword);
             passwordMap.put(username, hashedPass);
             savePasswords();
             logger.info("Password updated for user: " + username);

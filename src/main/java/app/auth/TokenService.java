@@ -2,10 +2,41 @@ package app.auth;
 
 import java.security.SecureRandom;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 
-public class TokenService {
+import app.auth.interfaces.ITokenService;
+
+public class TokenService implements ITokenService {
+
+    private static final TokenService instance = new TokenService();
+
+    public static TokenService getInstance() {
+        return instance;
+    }
 
     private SecureRandom random = new SecureRandom();
+
+    private final Map<String, String> tokenMap = new HashMap<>();
+
+    public String getToken(String username) {
+        return tokenMap.get(username);
+    }
+
+    public void storeToken(String username, String token) {
+        tokenMap.put(username, token);
+        // No need to call saveTokens() since we’re not writing to a file
+    }
+
+    public void removeToken(String username) {
+        tokenMap.remove(username);
+        // No need to call saveTokens() since we’re not writing to a file
+    }
+
+    public void clearTokens() {
+        tokenMap.clear();
+        // No need to call saveTokens() since we’re not writing to a file
+    }
 
     public String generateToken(String username) {
         byte[] randomBytes = new byte[24];
@@ -22,7 +53,7 @@ public class TokenService {
             if (parts.length < 2)
                 return false;
             String username = parts[0];
-            String storedToken = TokenStorage.getInstance().getToken(username);
+            String storedToken = getToken(username);
             storedToken = new String(Base64.getDecoder().decode(storedToken));
             return storedToken != null && storedToken.equals(decoded);
         } catch (Exception e) {

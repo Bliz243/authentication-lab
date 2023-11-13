@@ -50,8 +50,14 @@ public class ConfigManager {
         saveConfig();
     }
 
-    public PolicyConfig readJson() throws IOException {
-        return objectMapper.readValue(new File("accessPolicies"), PolicyConfig.class);
+    public PolicyConfig readJson(String parameter) throws IOException {
+        Map map = objectMapper.readValue(new File(getParameter(parameter)),
+                Map.class);
+        return new PolicyConfig(map);
+    }
+
+    public void writeJson(PolicyConfig policyConfig, String parameter) throws IOException {
+        objectMapper.writeValue(new File(getParameter(parameter)), policyConfig.getPolicies());
     }
 
     private void saveConfig() {

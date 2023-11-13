@@ -2,6 +2,9 @@ package app.auth;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
+
+import app.auth.interfaces.IEncryptionService;
+
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -10,7 +13,7 @@ import java.security.spec.KeySpec;
 import java.util.Arrays;
 import java.util.Base64;
 
-public class SecurePasswordService {
+public class EncryptionService implements IEncryptionService {
 
     private static final int SALT_SIZE = 16;
     private static final int PEPPER_SIZE = 8;
@@ -20,7 +23,8 @@ public class SecurePasswordService {
 
     private final byte[] localSecret = "YourLocalSecretHere".getBytes(StandardCharsets.UTF_8);
 
-    private byte[] cryptoHash(String password, byte[] salt, byte[] pepper) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public byte[] cryptoHash(String password, byte[] salt, byte[] pepper)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
         String pepperedPassword = password + new String(pepper, StandardCharsets.UTF_8);
         byte[] saltedSecret = concat(salt, localSecret);
 
@@ -47,7 +51,8 @@ public class SecurePasswordService {
                 Base64.getEncoder().encodeToString(hash));
     }
 
-    public boolean verifyPassword(String password, String storedPasswordHash, boolean[] requiresUpdate) throws NoSuchAlgorithmException, InvalidKeySpecException {
+    public boolean verifyPassword(String password, String storedPasswordHash, boolean[] requiresUpdate)
+            throws NoSuchAlgorithmException, InvalidKeySpecException {
         String[] parts = storedPasswordHash.split("\\$", 8);
         if (parts.length != 8) {
             throw new IllegalArgumentException("Stored password hash has an invalid format.");
@@ -65,7 +70,8 @@ public class SecurePasswordService {
 
         byte[] testHash = cryptoHash(password, salt, pepper);
 
-        requiresUpdate[0] = !storedAlgoName.equals(ALGORITHM) || storedSaltSize != SALT_SIZE || storedPepperSize != PEPPER_SIZE || storedIterations != ITERATIONS || storedHashSize != HASH_SIZE;
+        requiresUpdate[0] = !storedAlgoName.equals(ALGORITHM) || storedSaltSize != SALT_SIZE
+                || storedPepperSize != PEPPER_SIZE || storedIterations != ITERATIONS || storedHashSize != HASH_SIZE;
 
         return Arrays.equals(testHash, storedHash);
     }

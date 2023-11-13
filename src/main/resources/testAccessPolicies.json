@@ -1,4 +1,8 @@
 {
+  "powerUser": {
+    "members": ["jan", "cecilia"],
+    "permissions": ["print", "queue", "topqueue", "restart"]
+  },
   "super_admin": {
     "members": ["alice"],
     "permissions": [
@@ -25,10 +29,6 @@
       "readconfig",
       "setconfig"
     ]
-  },
-  "powerUser": {
-    "members": ["cecilia"],
-    "permissions": ["print", "queue", "topqueue", "restart"]
   },
   "user": {
     "members": ["stefan", "david", "erica", "fred", "george"],
