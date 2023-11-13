@@ -27,6 +27,7 @@ public class TokenServiceTest {
     public void testValidateToken() {
         String username = "testuser";
         String token = tokenService.generateToken(username);
+        tokenService.storeToken(username, token);
         assertTrue(tokenService.validateToken(token));
     }
 
