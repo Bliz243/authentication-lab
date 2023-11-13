@@ -12,6 +12,7 @@
       "queue",
       "topqueue",
       "updatepassword",
+      "updateuserperm",
       "createuser"
     ]
   },

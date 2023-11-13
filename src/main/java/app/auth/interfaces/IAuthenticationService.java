@@ -8,4 +8,6 @@ public interface IAuthenticationService {
     boolean hasPermission(String user, String operation);
 
     void setUserRole(String user, String role) throws IOException;
+
+    String getAvailableCommands(String user);
 }

@@ -9,12 +9,6 @@ import app.auth.interfaces.ITokenService;
 
 public class TokenService implements ITokenService {
 
-    private static final TokenService instance = new TokenService();
-
-    public static TokenService getInstance() {
-        return instance;
-    }
-
     private SecureRandom random = new SecureRandom();
 
     private final Map<String, String> tokenMap = new HashMap<>();

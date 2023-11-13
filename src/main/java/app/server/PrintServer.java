@@ -183,7 +183,6 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
     @Override
     public String printCommands(String token) throws RemoteException {
-        // TODO Update the available command list
         StringBuilder sb = new StringBuilder();
         sb.append("\nAvailable commands:\n");
         if (!tokenService.validateToken(token)) {
@@ -191,25 +190,9 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
             sb.append("help: To see available commands");
             return sb.toString();
         }
-        if (!running) {
-            sb.append("start: Starts the print server.\n");
-            return sb.toString();
-        }
-        sb.append("stop: Stops the print server.\n");
-        sb.append("restart: Restarts the print server.\n");
-        sb.append("print <filename> <printer>: Prints the file.\n");
-        sb.append("queue <printer>: Shows print queue. \n");
-        sb.append("topQueue <printer> <job>: Moves job to top of queue.\n");
-        sb.append("addToQueue <filename> <printer>: Adds to printer queue.\n");
-        sb.append("status <printer>: Shows printer status. \n");
-        sb.append("readConfig <parameter>: Reads configuration.\n");
-        sb.append("setConfig <paramter> <value>: Sets configuration.\n");
-        sb.append("createUser <username> <password>: Creates a new user\n");
-        sb.append("updatePassword <username> <password>: Update user password\n");
-        sb.append("logout: Logs current user out\n");
 
         logger.info("Returned commands");
-        return sb.toString();
+        return authenticationService.getAvailableCommands(tokenService.getUsername(token));
     }
 
     @Override
