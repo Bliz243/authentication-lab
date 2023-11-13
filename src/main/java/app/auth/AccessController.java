@@ -1,30 +1,30 @@
 package app.auth;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Map;
 
 import app.util.ConfigManager;
 import app.util.PolicyConfig;
 
 public class AccessController {
 
-    private ConfigManager configManager;
     private PolicyConfig policies;
 
     public AccessController() throws IOException {
-        this.configManager = ConfigManager.getInstance();
         this.policies = ConfigManager.getInstance().readJson();
     }
 
     public boolean hasPermission(String user, String operation) {
         // Check if the user has the operation in their direct permissions
-        if (policies.getPolicies().) {
-            return true;
-        }
+        for (Map.Entry<String, PolicyConfig.UserPolicy> entry : policies.getPolicies().entrySet()) {
+            PolicyConfig.UserPolicy policy = entry.getValue();
 
-        // Check if the user has a role that has the operation in its permissions
-        for (String role : rolePermissions.keySet()) {
-            if (rolePermissions.get(role).contains(operation)) {
+            System.out.println("User: " + user);
+            System.out.println("Role: " + entry.getKey());
+            System.out.println("Permissions: " + policy.getPermissions());
+            System.out.println("Members: " + policy.getMembers());
+
+            if (policy.getMembers().contains(user.toLowerCase()) && policy.getPermissions().contains(operation)) {
                 return true;
             }
         }

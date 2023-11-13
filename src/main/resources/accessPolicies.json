@@ -5,15 +5,15 @@
                 "alice"
             ],
             "permissions": [
-                "startServer",
-                "stopServer",
-                "restartServer",
+                "start",
+                "stop",
+                "restart",
                 "status",
-                "readConfig",
-                "setConfig",
+                "readconfig",
+                "setconfig",
                 "print",
                 "queue",
-                "topQueue"
+                "topcueue"
             ]
         },
         "technician": {
@@ -21,12 +21,12 @@
                 "bob"
             ],
             "permissions": [
-                "startServer",
-                "stopServer",
-                "restartServer",
+                "start",
+                "stop",
+                "restart",
                 "status",
-                "readConfig",
-                "setConfig"
+                "readconfig",
+                "setconfig"
             ]
         },
         "powerUser": {
@@ -36,8 +36,8 @@
             "permissions": [
                 "print",
                 "queue",
-                "topQueue",
-                "restartServer"
+                "topcueue",
+                "restart"
             ]
         },
         "user": {
