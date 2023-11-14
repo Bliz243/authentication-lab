@@ -11,7 +11,6 @@ import app.auth.interfaces.IPasswordService;
 import app.util.ACLPolicy;
 import app.util.ConfigManager;
 import app.util.RBACPolicy;
-import app.util.ACLPolicy.CommandPolicy;
 
 public class AuthenticationService implements IAuthenticationService {
 
@@ -19,15 +18,18 @@ public class AuthenticationService implements IAuthenticationService {
     private static final Logger logger = Logger.getLogger(AuthenticationService.class.getName());
     public RBACPolicy rbacPolicies;
     public ACLPolicy aclPolicy;
-    private String accessFileParameter = "RBAC";
+    private String rbacFileParamter = "RBAC";
+    private String aclFileParamter = "ACL";
+
 
     public AuthenticationService(IPasswordService passwordService) throws IOException {
-        this.rbacPolicies = ConfigManager.getInstance().readRBACJson(accessFileParameter);
+        this.aclPolicy = ConfigManager.getInstance().readACLJson(aclFileParamter);
+        this.rbacPolicies = ConfigManager.getInstance().readRBACJson(rbacFileParamter);
         this.passwordService = passwordService;
     }
 
     public AuthenticationService(IPasswordService passwordService, String setFileParamter) throws IOException {
-        this.accessFileParameter = setFileParamter;
+        this.aclPolicy = ConfigManager.getInstance().readACLJson(setFileParamter);
         this.rbacPolicies = ConfigManager.getInstance().readRBACJson(setFileParamter);
         this.passwordService = passwordService;
     }
@@ -60,7 +62,7 @@ public class AuthenticationService implements IAuthenticationService {
 
         rbacPolicies.getPolicies().get(role).getMembers().add(user);
 
-        ConfigManager.getInstance().writeJson(rbacPolicies, accessFileParameter);
+        ConfigManager.getInstance().writeJson(rbacPolicies, rbacFileParamter);
     }
 
     public boolean createNewRole(String role, List<String> permissions) throws IOException {
@@ -69,7 +71,7 @@ public class AuthenticationService implements IAuthenticationService {
         }
 
         rbacPolicies.getPolicies().put(role, new RBACPolicy.RolePolicy(new ArrayList<>(), permissions));
-        ConfigManager.getInstance().writeJson(rbacPolicies, accessFileParameter);
+        ConfigManager.getInstance().writeJson(rbacPolicies, rbacFileParamter);
         logger.info(String.format("New role '%s' created.", role));
         return true;
     }
@@ -77,7 +79,7 @@ public class AuthenticationService implements IAuthenticationService {
     public void deleteRole(String role) throws IOException {
         if (rbacPolicies.getPolicies().containsKey(role)) {
             rbacPolicies.getPolicies().remove(role);
-            ConfigManager.getInstance().writeJson(rbacPolicies, accessFileParameter);
+            ConfigManager.getInstance().writeJson(rbacPolicies, rbacFileParamter);
             logger.info(String.format("Role '%s' deleted.", role));
         } else {
             throw new IllegalArgumentException("The role does not exist: " + role);
@@ -95,7 +97,7 @@ public class AuthenticationService implements IAuthenticationService {
         RBACPolicy.RolePolicy rolePolicy = rbacPolicies.getPolicies().get(role);
         if (!rolePolicy.getPermissions().contains(permission)) {
             rolePolicy.getPermissions().add(permission);
-            ConfigManager.getInstance().writeJson(rbacPolicies, accessFileParameter);
+            ConfigManager.getInstance().writeJson(rbacPolicies, rbacFileParamter);
             logger.info(String.format("Permission '%s' added to role '%s'.", permission, role));
         } else {
             logger.warning(String.format("Permission '%s' already exists in role '%s'.", permission, role));

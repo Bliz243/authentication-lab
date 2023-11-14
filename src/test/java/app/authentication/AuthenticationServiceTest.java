@@ -17,6 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AuthenticationServiceTest {
     private AuthenticationService authenticationService;
+    private AuthenticationService aclService;
+
     private IEncryptionService encrypt;
     private IPasswordService passwordService;
 
@@ -24,7 +26,8 @@ class AuthenticationServiceTest {
     public void setUp() throws IOException {
         encrypt = new EncryptionService();
         passwordService = new PasswordService(encrypt);
-        authenticationService = new AuthenticationService(passwordService, "RBACTest"); // Uses the loaded
+        authenticationService = new AuthenticationService(passwordService, "RBACTest");
+        aclService = new AuthenticationService(passwordService, "ACLTest");
     }
 
     @Test
@@ -153,8 +156,6 @@ class AuthenticationServiceTest {
 
     @Test
     void testHasACLPermission() throws IOException {
-        AuthenticationService aclService = new AuthenticationService(passwordService, "ACLTest");
-
         assertTrue(aclService.hasACLPermission("alice", "start"),
                 "Alice should have permission to start");
 

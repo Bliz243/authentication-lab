@@ -1,6 +1,5 @@
 package app.server;
 
-import app.auth.TokenService;
 import app.auth.interfaces.IAuthenticationService;
 import app.auth.interfaces.IPasswordService;
 import app.auth.interfaces.ITokenService;
