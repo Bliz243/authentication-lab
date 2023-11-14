@@ -111,9 +111,13 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     public String start(String token) throws RemoteException {
         if (!tokenService.validateToken(token))
             return invalidSessionMsg;
-
-        if (!authenticationService.hasRBACPermission(tokenService.getUsername(token), "start"))
-            return unauthorizedMsg;
+        if (isRCAB) {
+            if (!authenticationService.hasRBACPermission(tokenService.getUsername(token), "start"))
+                return unauthorizedMsg;
+        } else {
+            if (!authenticationService.hasACLPermission(tokenService.getUsername(token), "start"))
+                return unauthorizedMsg;
+        }
 
         if (running)
             return "Server already running...";
