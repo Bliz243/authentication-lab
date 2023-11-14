@@ -62,8 +62,8 @@ public class ConfigManager {
         return new ACLPolicy(map);
     }
 
-    public void writeJson(RBACPolicy policyConfig, String parameter) throws IOException {
-        objectMapper.writeValue(new File(getParameter(parameter)), policyConfig.getPolicies());
+    public void writeJson(Map<String, ?> policyMap, String parameter) throws IOException {
+        objectMapper.writeValue(new File(getParameter(parameter)), policyMap);
     }
 
     private void saveConfig() {

@@ -12,6 +12,11 @@ import app.util.ACLPolicy;
 import app.util.ConfigManager;
 import app.util.RBACPolicy;
 
+/**
+ * AuthenticationService class implements IAuthenticationService interface and provides methods for authentication, role-based access control (RBAC), and access control list (ACL).
+ * It uses ConfigManager to read and write RBAC and ACL policies from and to JSON files.
+ * It also uses IPasswordService to verify user passwords.
+ */
 public class AuthenticationService implements IAuthenticationService {
 
     private IPasswordService passwordService;
@@ -62,7 +67,7 @@ public class AuthenticationService implements IAuthenticationService {
 
         rbacPolicies.getPolicies().get(role).getMembers().add(user);
 
-        ConfigManager.getInstance().writeJson(rbacPolicies, rbacFileParamter);
+        ConfigManager.getInstance().writeJson(rbacPolicies.getPolicies(), rbacFileParamter);
     }
 
     public boolean createNewRole(String role, List<String> permissions) throws IOException {
@@ -71,7 +76,7 @@ public class AuthenticationService implements IAuthenticationService {
         }
 
         rbacPolicies.getPolicies().put(role, new RBACPolicy.RolePolicy(new ArrayList<>(), permissions));
-        ConfigManager.getInstance().writeJson(rbacPolicies, rbacFileParamter);
+        ConfigManager.getInstance().writeJson(rbacPolicies.getPolicies(), rbacFileParamter);
         logger.info(String.format("New role '%s' created.", role));
         return true;
     }
@@ -79,7 +84,7 @@ public class AuthenticationService implements IAuthenticationService {
     public void deleteRole(String role) throws IOException {
         if (rbacPolicies.getPolicies().containsKey(role)) {
             rbacPolicies.getPolicies().remove(role);
-            ConfigManager.getInstance().writeJson(rbacPolicies, rbacFileParamter);
+            ConfigManager.getInstance().writeJson(rbacPolicies.getPolicies(), rbacFileParamter);
             logger.info(String.format("Role '%s' deleted.", role));
         } else {
             throw new IllegalArgumentException("The role does not exist: " + role);
@@ -97,7 +102,7 @@ public class AuthenticationService implements IAuthenticationService {
         RBACPolicy.RolePolicy rolePolicy = rbacPolicies.getPolicies().get(role);
         if (!rolePolicy.getPermissions().contains(permission)) {
             rolePolicy.getPermissions().add(permission);
-            ConfigManager.getInstance().writeJson(rbacPolicies, rbacFileParamter);
+            ConfigManager.getInstance().writeJson(rbacPolicies.getPolicies(), rbacFileParamter);
             logger.info(String.format("Permission '%s' added to role '%s'.", permission, role));
         } else {
             logger.warning(String.format("Permission '%s' already exists in role '%s'.", permission, role));
@@ -171,30 +176,44 @@ public class AuthenticationService implements IAuthenticationService {
 
     @Override
     public String getACLAvailableCommands(String user) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getACLAvailableCommands'");
+        StringBuilder commands = new StringBuilder();
+        commands.append("\nAvailable commands for ").append(user).append(":\n");
+
+        aclPolicy.getPolicies().forEach((command, commandPolicy) -> {
+            if (commandPolicy.getMembers().contains(user)) {
+                commands.append(command).append("\n");
+            }
+        });
+
+        return commands.toString();
     }
 
     @Override
-    public void addUserToCommand(String user, String operation) {
-        if (!aclPolicy.getPolicies().containsKey(operation)) {
+    public void addUserToCommand(String user, String operation) throws IOException {
+        ACLPolicy.CommandPolicy commandPolicy = aclPolicy.getPolicies().get(operation);
+        if (commandPolicy == null) {
             throw new IllegalArgumentException("The command does not exist: " + operation);
         }
 
-        aclPolicy.getPolicies().get(operation).getMembers().add(user);
+        if (!commandPolicy.getMembers().contains(user)) {
+            commandPolicy.getMembers().add(user);
+            // Assuming ConfigManager has a method to write ACL policies back to the file
+            ConfigManager.getInstance().writeJson(aclPolicy.getPolicies(), aclFileParamter);
+        }
     }
 
     @Override
-    public void removeUserFromCommand(String user, String operation) {
-        if (!aclPolicy.getPolicies().containsKey(operation)) {
+    public void removeUserFromCommand(String user, String operation) throws IOException {
+        ACLPolicy.CommandPolicy commandPolicy = aclPolicy.getPolicies().get(operation);
+        if (commandPolicy == null) {
             throw new IllegalArgumentException("The command does not exist: " + operation);
         }
 
-        if (!aclPolicy.getPolicies().get(operation).getMembers().contains(user)) {
-            throw new IllegalArgumentException("The user does not exist on: " + operation);
+        if (commandPolicy.getMembers().remove(user)) {
+            // Only write to the file if the user was actually removed
+            ConfigManager.getInstance().writeJson(aclPolicy.getPolicies(), aclFileParamter);
+        } else {
+            throw new IllegalArgumentException("The user does not have access to the command: " + operation);
         }
-
-        aclPolicy.getPolicies().get(operation).getMembers().remove(user);
-
     }
 }

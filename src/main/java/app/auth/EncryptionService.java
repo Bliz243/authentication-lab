@@ -13,6 +13,9 @@ import java.security.spec.KeySpec;
 import java.util.Arrays;
 import java.util.Base64;
 
+/**
+ * This class provides encryption and decryption services for passwords using PBKDF2WithHmacSHA512 algorithm.
+ */
 public class EncryptionService implements IEncryptionService {
 
     private static final int SALT_SIZE = 16;

@@ -1,6 +1,8 @@
 {
   "super_admin": {
-    "members": ["alice"],
+    "members": [
+      "alice"
+    ],
     "permissions": [
       "start",
       "stop",
@@ -17,7 +19,9 @@
     ]
   },
   "technician": {
-    "members": ["bob"],
+    "members": [
+      "bob"
+    ],
     "permissions": [
       "start",
       "stop",
@@ -28,11 +32,27 @@
     ]
   },
   "powerUser": {
-    "members": ["cecilia"],
-    "permissions": ["print", "queue", "topqueue", "restart"]
+    "members": [
+      "cecilia"
+    ],
+    "permissions": [
+      "print",
+      "queue",
+      "topqueue",
+      "restart"
+    ]
   },
   "user": {
-    "members": ["stefan", "david", "erica", "fred", "george"],
-    "permissions": ["print", "queue"]
+    "members": [
+      "stefan",
+      "david",
+      "erica",
+      "fred",
+      "george"
+    ],
+    "permissions": [
+      "print",
+      "queue"
+    ]
   }
 }

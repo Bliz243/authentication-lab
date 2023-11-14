@@ -13,9 +13,9 @@ public interface IAuthenticationService {
 
     void deleteRole(String role) throws IOException;
 
-    void addUserToCommand(String user, String operation);
+    void addUserToCommand(String user, String operation) throws IOException;
 
-    void removeUserFromCommand(String user, String operation);
+    void removeUserFromCommand(String user, String operation) throws IOException;
 
     String getRBACAvailableCommands(String user);
 

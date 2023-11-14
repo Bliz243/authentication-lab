@@ -7,6 +7,10 @@ import java.util.Map;
 
 import app.auth.interfaces.ITokenService;
 
+/**
+ * This class provides methods for generating, storing, and validating tokens
+ * for user authentication.
+ */
 public class TokenService implements ITokenService {
 
     private SecureRandom random = new SecureRandom();
@@ -19,17 +23,14 @@ public class TokenService implements ITokenService {
 
     public void storeToken(String username, String token) {
         tokenMap.put(username, token);
-        // No need to call saveTokens() since we’re not writing to a file
     }
 
     public void removeToken(String username) {
         tokenMap.remove(username);
-        // No need to call saveTokens() since we’re not writing to a file
     }
 
     public void clearTokens() {
         tokenMap.clear();
-        // No need to call saveTokens() since we’re not writing to a file
     }
 
     public String generateToken(String username) {

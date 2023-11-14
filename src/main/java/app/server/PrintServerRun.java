@@ -28,24 +28,24 @@ public class PrintServerRun {
             IPasswordService passwordService = new PasswordService(encryptionService);
             IAuthenticationService authenticationService = new AuthenticationService(passwordService);
 
-            logger.info("Choose ACL or RCAB:");
+            logger.info("Choose ACL or RBAC:");
             Scanner in = new Scanner(System.in);
 
-            boolean isRCAB;
+            boolean isRBAC;
             while (true) {
                 in.nextLine();
-                if (in.toString().equalsIgnoreCase("rcab")) {
-                    isRCAB = true;
+                if (in.toString().equalsIgnoreCase("rbac")) {
+                    isRBAC = true;
                     break;
                 } else if (in.toString().equalsIgnoreCase("acl")) {
-                    isRCAB = false;
+                    isRBAC = false;
                     break;
                 }
             }
             ;
 
             IPrintServer printServer = new PrintServer(passwordService, tokenService,
-                    authenticationService, isRCAB);
+                    authenticationService, isRBAC);
             UnicastRemoteObject.unexportObject(printServer, true);
             IPrintServer stub = (IPrintServer) UnicastRemoteObject.exportObject(printServer, 0);
 

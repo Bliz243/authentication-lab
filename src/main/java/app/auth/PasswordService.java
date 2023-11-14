@@ -16,6 +16,12 @@ import app.auth.interfaces.IPasswordService;
 import app.server.PrintServer;
 import app.util.ConfigManager;
 
+/**
+ * This class represents a service for managing user passwords.
+ * It provides methods for verifying passwords, loading and saving passwords from a file, creating new users, updating existing passwords, and deleting users.
+ * Passwords are stored in a map with usernames as keys and hashed passwords as values.
+ * The PasswordService class uses an IEncryptionService instance to encrypt and verify passwords.
+ */
 public class PasswordService implements IPasswordService {
     private static final Logger logger = Logger.getLogger(PrintServer.class.getName());
     private String PASSWORD_FILE;
