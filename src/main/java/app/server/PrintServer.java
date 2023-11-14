@@ -21,6 +21,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     private static final Logger logger = Logger.getLogger(PrintServer.class.getName());
     private int triesForLogin = 0;
     private boolean running = false;
+    private boolean isRCAB;
     private String invalidSessionMsg = "Unauthorized, invalid session.";
     private String unauthorizedMsg = "Unauthorized, you don't have access to this command.";
     private String serverNotRunningMsg = "Server not running.";
@@ -33,11 +34,12 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     private int nextJobId = 1;
 
     public PrintServer(IPasswordService passwordService, ITokenService tokenService,
-            IAuthenticationService authenticationService) throws IOException {
+            IAuthenticationService authenticationService, boolean isRCAB) throws IOException {
         super();
         this.tokenService = tokenService;
         this.passwordService = passwordService;
         this.authenticationService = authenticationService;
+        this.isRCAB = isRCAB;
     }
 
     @Override
@@ -192,7 +194,12 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         }
 
         logger.info("Returned commands");
-        return authenticationService.getRBACAvailableCommands(tokenService.getUsername(token));
+        if (isRCAB) {
+            return authenticationService.getRBACAvailableCommands(tokenService.getUsername(token));
+
+        } else {
+            return authenticationService.getACLAvailableCommands(tokenService.getUsername(token));
+        }
     }
 
     @Override
@@ -222,8 +229,9 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
         passwordService.createNewUser(newUser, password);
         try {
-
-            authenticationService.setUserRole(newUser, "user");
+            if (isRCAB) {
+                authenticationService.setUserRole(newUser, "user");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -266,9 +274,13 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     private String validateExecution(String operation, String token) {
         if (!tokenService.validateToken(token))
             return invalidSessionMsg;
-
-        if (!authenticationService.hasRBACPermission(tokenService.getUsername(token), operation))
-            return unauthorizedMsg;
+        if (isRCAB) {
+            if (!authenticationService.hasRBACPermission(tokenService.getUsername(token), operation))
+                return unauthorizedMsg;
+        } else {
+            if (!authenticationService.hasACLPermission(tokenService.getUsername(token), operation))
+                return unauthorizedMsg;
+        }
 
         if (!running)
             return serverNotRunningMsg;
