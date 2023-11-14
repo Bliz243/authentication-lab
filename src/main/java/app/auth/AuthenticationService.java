@@ -179,11 +179,20 @@ public class AuthenticationService implements IAuthenticationService {
             throw new IllegalArgumentException("The command does not exist: " + operation);
         }
 
+        aclPolicy.getPolicies().get(operation).getMembers().add(user);
     }
 
     @Override
     public void removeUserFromCommand(String user, String operation) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'removeUserFromCommand'");
+        if (!aclPolicy.getPolicies().containsKey(operation)) {
+            throw new IllegalArgumentException("The command does not exist: " + operation);
+        }
+
+        if (!aclPolicy.getPolicies().get(operation).getMembers().contains(user)) {
+            throw new IllegalArgumentException("The user does not exist on: " + operation);
+        }
+
+        aclPolicy.getPolicies().get(operation).getMembers().remove(user);
+
     }
 }
