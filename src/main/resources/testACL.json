@@ -1,0 +1,71 @@
+{
+    "printServer": {
+        "start": [
+            "alice",
+            "george"
+        ],
+        "stop": [
+            "alice",
+            "george"
+        ],
+        "restart": [
+            "alice",
+            "george",
+            "cecilia",
+            "ida"
+        ],
+        "status": [
+            "alice",
+            "george",
+            "cecilia",
+            "stefan",
+            "david",
+            "erica",
+            "fred",
+            "henry",
+            "ida"
+        ],
+        "readconfig": [
+            "alice",
+            "george"
+        ],
+        "setconfig": [
+            "alice",
+            "george"
+        ],
+        "print": [
+            "alice",
+            "cecilia",
+            "stefan",
+            "david",
+            "erica",
+            "fred",
+            "henry",
+            "ida"
+        ],
+        "queue": [
+            "alice",
+            "cecilia",
+            "stefan",
+            "david",
+            "erica",
+            "fred",
+            "henry",
+            "ida"
+        ],
+        "topqueue": [
+            "alice",
+            "cecilia",
+            "ida"
+        ],
+        "updatepassword": [
+            "alice"
+        ],
+        "updateuserperm": [
+            "alice"
+        ],
+        "createuser": [
+            "alice"
+        ]
+    }
+}

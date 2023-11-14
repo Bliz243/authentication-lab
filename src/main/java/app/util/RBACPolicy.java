@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PolicyConfig {
+public class RBACPolicy {
     private Map<String, RolePolicy> policies;
 
-    public PolicyConfig(Map<String, Object> map) {
+    public RBACPolicy(Map<String, Object> map) {
         this.policies = new HashMap<>();
         // Check if the map contains the "policies" top-level key
         if (map.containsKey("policies") && map.get("policies") instanceof Map) {

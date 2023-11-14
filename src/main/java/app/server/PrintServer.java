@@ -110,7 +110,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         if (!tokenService.validateToken(token))
             return invalidSessionMsg;
 
-        if (!authenticationService.hasPermission(tokenService.getUsername(token), "start"))
+        if (!authenticationService.hasRBACPermission(tokenService.getUsername(token), "start"))
             return unauthorizedMsg;
 
         if (running)
@@ -192,7 +192,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         }
 
         logger.info("Returned commands");
-        return authenticationService.getAvailableCommands(tokenService.getUsername(token));
+        return authenticationService.getRBACAvailableCommands(tokenService.getUsername(token));
     }
 
     @Override
@@ -267,7 +267,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         if (!tokenService.validateToken(token))
             return invalidSessionMsg;
 
-        if (!authenticationService.hasPermission(tokenService.getUsername(token), operation))
+        if (!authenticationService.hasRBACPermission(tokenService.getUsername(token), operation))
             return unauthorizedMsg;
 
         if (!running)

@@ -24,8 +24,7 @@ class AuthenticationServiceTest {
     public void setUp() throws IOException {
         encrypt = new EncryptionService();
         passwordService = new PasswordService(encrypt);
-        authenticationService = new AuthenticationService(passwordService, "testAccessPolicies"); // Uses the loaded
-                                                                                                  // test policies
+        authenticationService = new AuthenticationService(passwordService, "RBACTest"); // Uses the loaded
     }
 
     @Test
@@ -34,7 +33,7 @@ class AuthenticationServiceTest {
         String[] superAdminPermissions = { "start", "stop", "restart", "status", "readconfig", "setconfig", "print",
                 "queue", "topqueue" };
         for (String permission : superAdminPermissions) {
-            assertTrue(authenticationService.hasPermission("alice", permission),
+            assertTrue(authenticationService.hasRBACPermission("alice", permission),
                     "Super admin should have permission to " + permission);
         }
     }
@@ -42,27 +41,27 @@ class AuthenticationServiceTest {
     @Test
     void testTechnicianPermissions() {
         // Test that Bob, who is a technician, has the correct permissions
-        assertTrue(authenticationService.hasPermission("bob", "start"));
-        assertTrue(authenticationService.hasPermission("bob", "status"));
-        assertFalse(authenticationService.hasPermission("bob", "print"),
+        assertTrue(authenticationService.hasRBACPermission("bob", "start"));
+        assertTrue(authenticationService.hasRBACPermission("bob", "status"));
+        assertFalse(authenticationService.hasRBACPermission("bob", "print"),
                 "Technician should not have permission to print");
     }
 
     @Test
     void testPowerUserPermissions() {
         // Test that Cecilia, who is a powerUser, has the correct permissions
-        assertTrue(authenticationService.hasPermission("cecilia", "print"));
-        assertTrue(authenticationService.hasPermission("cecilia", "queue"));
-        assertFalse(authenticationService.hasPermission("cecilia", "setconfig"),
+        assertTrue(authenticationService.hasRBACPermission("cecilia", "print"));
+        assertTrue(authenticationService.hasRBACPermission("cecilia", "queue"));
+        assertFalse(authenticationService.hasRBACPermission("cecilia", "setconfig"),
                 "Power user should not have permission to setconfig");
     }
 
     @Test
     void testUserPermissions() {
         // Test that David, who is a user, has the correct permissions
-        assertTrue(authenticationService.hasPermission("david", "print"));
-        assertTrue(authenticationService.hasPermission("david", "queue"));
-        assertFalse(authenticationService.hasPermission("david", "restart"),
+        assertTrue(authenticationService.hasRBACPermission("david", "print"));
+        assertTrue(authenticationService.hasRBACPermission("david", "queue"));
+        assertFalse(authenticationService.hasRBACPermission("david", "restart"),
                 "User should not have permission to restart");
     }
 
@@ -75,16 +74,18 @@ class AuthenticationServiceTest {
         authenticationService.setUserRole(user, newRole);
 
         // Check that 'newUser' now has 'user' role permissions
-        assertTrue(authenticationService.hasPermission(user, "print"), "User should have permission to print");
-        assertTrue(authenticationService.hasPermission(user, "queue"), "User should have permission to view the queue");
-        assertFalse(authenticationService.hasPermission(user, "restart"), "User should not have permission to restart");
+        assertTrue(authenticationService.hasRBACPermission(user, "print"), "User should have permission to print");
+        assertTrue(authenticationService.hasRBACPermission(user, "queue"),
+                "User should have permission to view the queue");
+        assertFalse(authenticationService.hasRBACPermission(user, "restart"),
+                "User should not have permission to restart");
 
         // Reload the policy to ensure changes are persisted
-        assertTrue(authenticationService.hasPermission(user, "print"),
+        assertTrue(authenticationService.hasRBACPermission(user, "print"),
                 "User should still have permission to print after reloading policies");
-        assertTrue(authenticationService.hasPermission(user, "queue"),
+        assertTrue(authenticationService.hasRBACPermission(user, "queue"),
                 "User should still have permission to view the queue after reloading policies");
-        assertFalse(authenticationService.hasPermission(user, "restart"),
+        assertFalse(authenticationService.hasRBACPermission(user, "restart"),
                 "User should still not have permission to restart after reloading policies");
 
         authenticationService.setUserRole(user, "powerUser");
@@ -114,18 +115,18 @@ class AuthenticationServiceTest {
     @Test
     public void testCreateNewRole() throws IOException {
         String newRole = "newRole";
-    List<String> permissions = Arrays.asList("newpermission1", "newpermission2");
+        List<String> permissions = Arrays.asList("newpermission1", "newpermission2");
 
-    String existingUser = "testnewrole";
+        String existingUser = "testnewrole";
 
-    authenticationService.createNewRole(newRole, permissions);
-    authenticationService.setUserRole(existingUser, newRole);
+        authenticationService.createNewRole(newRole, permissions);
+        authenticationService.setUserRole(existingUser, newRole);
 
-    for (String permission : permissions) {
-        assertTrue(authenticationService.hasPermission(existingUser, permission),
+        for (String permission : permissions) {
+            assertTrue(authenticationService.hasRBACPermission(existingUser, permission),
                     "User should have '" + permission + "' permission after being assigned to the new role.");
+        }
     }
-}
 
     @Test
     public void testDeleteRole() throws IOException {
@@ -136,7 +137,7 @@ class AuthenticationServiceTest {
         authenticationService.deleteRole(roleToDelete);
 
         assertFalse(authenticationService.getListOfRoles().contains(roleToDelete),
-                    "Role should not exist after deletion.");
+                "Role should not exist after deletion.");
     }
 
     @Test
@@ -146,7 +147,28 @@ class AuthenticationServiceTest {
 
         authenticationService.addPermissionToRole(role, newPermission);
 
-        assertTrue(authenticationService.hasPermission("alice", newPermission),
+        assertTrue(authenticationService.hasRBACPermission("alice", newPermission),
                 "Super admin should have the newly added permission.");
+    }
+
+    @Test
+    void testHasACLPermission() throws IOException {
+        AuthenticationService aclService = new AuthenticationService(passwordService, "ACLTest");
+
+        assertTrue(aclService.hasACLPermission("alice", "start"),
+                "Alice should have permission to start");
+
+        assertFalse(aclService.hasACLPermission("bob", "stop"),
+                "Bob should not have permission to stop");
+
+        assertTrue(aclService.hasACLPermission("cecilia", "restart"),
+                "Cecilia should have permission to restart");
+
+        assertFalse(aclService.hasACLPermission("david", "start"),
+                "David should not have permission to start");
+        assertFalse(aclService.hasACLPermission("david", "stop"),
+                "David should not have permission to stop");
+        assertFalse(aclService.hasACLPermission("david", "restart"),
+                "David should not have permission to restart");
     }
 }

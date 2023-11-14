@@ -8,30 +8,33 @@ import java.util.logging.Logger;
 
 import app.auth.interfaces.IAuthenticationService;
 import app.auth.interfaces.IPasswordService;
+import app.util.ACLPolicy;
 import app.util.ConfigManager;
-import app.util.PolicyConfig;
+import app.util.RBACPolicy;
+import app.util.ACLPolicy.CommandPolicy;
 
 public class AuthenticationService implements IAuthenticationService {
 
     private IPasswordService passwordService;
     private static final Logger logger = Logger.getLogger(AuthenticationService.class.getName());
-    public PolicyConfig policies;
-    private String accessFileParameter = "accessPolicies";
+    public RBACPolicy rbacPolicies;
+    public ACLPolicy aclPolicy;
+    private String accessFileParameter = "RBAC";
 
     public AuthenticationService(IPasswordService passwordService) throws IOException {
-        this.policies = ConfigManager.getInstance().readJson(accessFileParameter);
+        this.rbacPolicies = ConfigManager.getInstance().readRBACJson(accessFileParameter);
         this.passwordService = passwordService;
     }
 
     public AuthenticationService(IPasswordService passwordService, String setFileParamter) throws IOException {
         this.accessFileParameter = setFileParamter;
-        this.policies = ConfigManager.getInstance().readJson(setFileParamter);
+        this.rbacPolicies = ConfigManager.getInstance().readRBACJson(setFileParamter);
         this.passwordService = passwordService;
     }
 
-    public boolean hasPermission(String user, String operation) {
-        for (Map.Entry<String, PolicyConfig.RolePolicy> entry : policies.getPolicies().entrySet()) {
-            PolicyConfig.RolePolicy rolePolicy = entry.getValue();
+    public boolean hasRBACPermission(String user, String operation) {
+        for (Map.Entry<String, RBACPolicy.RolePolicy> entry : rbacPolicies.getPolicies().entrySet()) {
+            RBACPolicy.RolePolicy rolePolicy = entry.getValue();
 
             if (rolePolicy.getMembers().contains(user.toLowerCase())
                     && rolePolicy.getPermissions().contains(operation)) {
@@ -41,35 +44,40 @@ public class AuthenticationService implements IAuthenticationService {
         return false;
     }
 
+    public boolean hasACLPermission(String user, String operation) {
+        ACLPolicy.CommandPolicy commandPolicy = aclPolicy.getPolicies().get(operation);
+        return commandPolicy != null && commandPolicy.getMembers().contains(user);
+    }
+
     public void setUserRole(String user, String role) throws IOException {
-        if (!policies.getPolicies().containsKey(role)) {
+        if (!rbacPolicies.getPolicies().containsKey(role)) {
             throw new IllegalArgumentException("The role does not exist: " + role);
         }
 
-        for (PolicyConfig.RolePolicy rolePolicy : policies.getPolicies().values()) {
+        for (RBACPolicy.RolePolicy rolePolicy : rbacPolicies.getPolicies().values()) {
             rolePolicy.getMembers().removeIf(existingUser -> existingUser.equalsIgnoreCase(user));
         }
 
-        policies.getPolicies().get(role).getMembers().add(user);
+        rbacPolicies.getPolicies().get(role).getMembers().add(user);
 
-        ConfigManager.getInstance().writeJson(policies, accessFileParameter);
+        ConfigManager.getInstance().writeJson(rbacPolicies, accessFileParameter);
     }
 
-     public boolean createNewRole(String role, List<String> permissions) throws IOException {
-        if (policies.getPolicies().containsKey(role)) {
+    public boolean createNewRole(String role, List<String> permissions) throws IOException {
+        if (rbacPolicies.getPolicies().containsKey(role)) {
             return false;
         }
 
-        policies.getPolicies().put(role, new PolicyConfig.RolePolicy(new ArrayList<>(), permissions));
-        ConfigManager.getInstance().writeJson(policies, accessFileParameter);
+        rbacPolicies.getPolicies().put(role, new RBACPolicy.RolePolicy(new ArrayList<>(), permissions));
+        ConfigManager.getInstance().writeJson(rbacPolicies, accessFileParameter);
         logger.info(String.format("New role '%s' created.", role));
         return true;
     }
 
     public void deleteRole(String role) throws IOException {
-        if (policies.getPolicies().containsKey(role)) {
-            policies.getPolicies().remove(role);
-            ConfigManager.getInstance().writeJson(policies, accessFileParameter);
+        if (rbacPolicies.getPolicies().containsKey(role)) {
+            rbacPolicies.getPolicies().remove(role);
+            ConfigManager.getInstance().writeJson(rbacPolicies, accessFileParameter);
             logger.info(String.format("Role '%s' deleted.", role));
         } else {
             throw new IllegalArgumentException("The role does not exist: " + role);
@@ -77,17 +85,17 @@ public class AuthenticationService implements IAuthenticationService {
     }
 
     public List<String> getListOfRoles() {
-        return new ArrayList<>(policies.getPolicies().keySet());
+        return new ArrayList<>(rbacPolicies.getPolicies().keySet());
     }
 
     public void addPermissionToRole(String role, String permission) throws IOException {
-        if (!policies.getPolicies().containsKey(role)) {
+        if (!rbacPolicies.getPolicies().containsKey(role)) {
             throw new IllegalArgumentException("The role does not exist: " + role);
         }
-        PolicyConfig.RolePolicy rolePolicy = policies.getPolicies().get(role);
+        RBACPolicy.RolePolicy rolePolicy = rbacPolicies.getPolicies().get(role);
         if (!rolePolicy.getPermissions().contains(permission)) {
             rolePolicy.getPermissions().add(permission);
-            ConfigManager.getInstance().writeJson(policies, accessFileParameter);
+            ConfigManager.getInstance().writeJson(rbacPolicies, accessFileParameter);
             logger.info(String.format("Permission '%s' added to role '%s'.", permission, role));
         } else {
             logger.warning(String.format("Permission '%s' already exists in role '%s'.", permission, role));
@@ -102,12 +110,12 @@ public class AuthenticationService implements IAuthenticationService {
     }
 
     @Override
-    public String getAvailableCommands(String user) {
+    public String getRBACAvailableCommands(String user) {
         StringBuilder commands = new StringBuilder();
         commands.append("\nAvailable commands:\n");
 
-        for (Map.Entry<String, PolicyConfig.RolePolicy> entry : policies.getPolicies().entrySet()) {
-            PolicyConfig.RolePolicy rolePolicy = entry.getValue();
+        for (Map.Entry<String, RBACPolicy.RolePolicy> entry : rbacPolicies.getPolicies().entrySet()) {
+            RBACPolicy.RolePolicy rolePolicy = entry.getValue();
             if (rolePolicy.getMembers().contains(user)) {
                 for (String permission : rolePolicy.getPermissions()) {
                     switch (permission) {
@@ -157,5 +165,25 @@ public class AuthenticationService implements IAuthenticationService {
         }
         commands.append("logout: Logs current user out\n");
         return commands.toString();
+    }
+
+    @Override
+    public String getACLAvailableCommands(String user) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getACLAvailableCommands'");
+    }
+
+    @Override
+    public void addUserToCommand(String user, String operation) {
+        if (!aclPolicy.getPolicies().containsKey(operation)) {
+            throw new IllegalArgumentException("The command does not exist: " + operation);
+        }
+
+    }
+
+    @Override
+    public void removeUserFromCommand(String user, String operation) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'removeUserFromCommand'");
     }
 }

@@ -50,13 +50,19 @@ public class ConfigManager {
         saveConfig();
     }
 
-    public PolicyConfig readJson(String parameter) throws IOException {
+    public RBACPolicy readRBACJson(String parameter) throws IOException {
         Map map = objectMapper.readValue(new File(getParameter(parameter)),
                 Map.class);
-        return new PolicyConfig(map);
+        return new RBACPolicy(map);
     }
 
-    public void writeJson(PolicyConfig policyConfig, String parameter) throws IOException {
+    public ACLPolicy readACLJson(String parameter) throws IOException {
+        Map map = objectMapper.readValue(new File(getParameter(parameter)),
+                Map.class);
+        return new ACLPolicy(map);
+    }
+
+    public void writeJson(RBACPolicy policyConfig, String parameter) throws IOException {
         objectMapper.writeValue(new File(getParameter(parameter)), policyConfig.getPolicies());
     }
 
