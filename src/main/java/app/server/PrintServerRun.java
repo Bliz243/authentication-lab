@@ -3,6 +3,7 @@ package app.server;
 import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Scanner;
 import java.util.logging.Logger;
 
 import app.auth.AuthenticationService;
@@ -27,8 +28,24 @@ public class PrintServerRun {
             IPasswordService passwordService = new PasswordService(encryptionService);
             IAuthenticationService authenticationService = new AuthenticationService(passwordService);
 
+            logger.info("Choose ACL or RCAB:");
+            Scanner in = new Scanner(System.in);
+
+            boolean isRCAB;
+            while (true) {
+                in.nextLine();
+                if (in.toString().equalsIgnoreCase("rcab")) {
+                    isRCAB = true;
+                    break;
+                } else if (in.toString().equalsIgnoreCase("acl")) {
+                    isRCAB = false;
+                    break;
+                }
+            }
+            ;
+
             IPrintServer printServer = new PrintServer(passwordService, tokenService,
-                    authenticationService);
+                    authenticationService, isRCAB);
             UnicastRemoteObject.unexportObject(printServer, true);
             IPrintServer stub = (IPrintServer) UnicastRemoteObject.exportObject(printServer, 0);
 
