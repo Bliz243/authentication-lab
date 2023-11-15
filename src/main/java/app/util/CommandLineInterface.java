@@ -99,6 +99,12 @@ public class CommandLineInterface {
         commandsMap.put("updateUserRole", (token, args) -> {
             print(printServer.updateUserPermissions(args[0], args[1], token));
         });
+        commandsMap.put("addUserCommand", (token, args) -> {
+            print(printServer.addUserToCommand(args[0], args[1], token));
+        });
+        commandsMap.put("removeUserCommand", (token, args) -> {
+            print(printServer.removeUserFromCommand(args[0], args[1], token));
+        });
 
     }
 

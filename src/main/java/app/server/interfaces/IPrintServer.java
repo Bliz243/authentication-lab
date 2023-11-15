@@ -31,6 +31,10 @@ public interface IPrintServer extends Remote {
         String printCommands(String token) throws RemoteException;
 
         // Extra methods for controlling printserver flow
+        String addUserToCommand(String user, String command, String token) throws RemoteException;
+
+        String removeUserFromCommand(String user, String command, String token) throws RemoteException;
+
         String updateUserPermissions(String user, String role, String token) throws RemoteException;
 
         String authenticateUser(String user, String password) throws RemoteException;

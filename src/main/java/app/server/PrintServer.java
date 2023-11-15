@@ -21,9 +21,9 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     private int triesForLogin = 0;
     private boolean running = false;
     private boolean isRBAC;
-    private String invalidSessionMsg = "Unauthorized, invalid session.";
-    private String unauthorizedMsg = "Unauthorized, you don't have access to this command.";
-    private String serverNotRunningMsg = "Server not running.";
+    private String invalidSessionMsg = "Unauthorized, invalid session.\n";
+    private String unauthorizedMsg = "Unauthorized, you don't have access to this command.\n";
+    private String serverNotRunningMsg = "Server not running.\n";
 
     private String successMsg = "200";
     private transient ITokenService tokenService;
@@ -47,8 +47,8 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         if (!Objects.equals(msg, successMsg))
             return msg;
 
-        logger.info("Print request: " + filename + " on printer: " + printer);
-        return "Printing " + filename + " on printer: " + printer;
+        logger.info("Print request: " + filename + " on printer: " + printer + "\n");
+        return "Printing " + filename + " on printer: " + printer + "\n";
     }
 
     @Override
@@ -88,9 +88,9 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
             printQueue.remove(jobToMove);
             printQueue.addFirst(jobToMove);
             logger.info("Move job: " + jobId + " to top of queue on printer: " + printer);
-            return "Moving job: " + jobId + " to top of queue on printer: " + printer;
+            return "Moving job: " + jobId + " to top of queue on printer: " + printer + "\n";
         } else {
-            return "Job not found";
+            return "Job not found\n";
         }
     }
 
@@ -103,7 +103,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         PrintJob newJob = new PrintJob(newJobId, filename, printer);
         printQueue.addFirst(newJob);
         logger.info("Added job: " + newJobId + " to queue on printer: " + printer);
-        return "Added job: " + newJobId + " to queue on printer: " + printer;
+        return "Added job: " + newJobId + " to queue on printer: " + printer + "\n";
     }
 
     @Override
@@ -119,11 +119,11 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         }
 
         if (running)
-            return "Server already running...";
+            return "Server already running...\n";
 
         running = true;
         logger.info("Print server started.");
-        return "Print server started." + "\n" + printCommands(token);
+        return "Print server started." + "\n";
     }
 
     @Override
@@ -135,7 +135,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         running = false;
 
         logger.info("Print server stopped.");
-        return "Print server stopped";
+        return "Print server stopped\n";
     }
 
     @Override
@@ -144,14 +144,18 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         if (!Objects.equals(msg, successMsg))
             return msg;
 
-        // bruh🤪🤣
-        running = false;
         logger.info("Restaring server...");
-        wait(10000);
+        running = false;
+
+        // bruh🤪🤣
+        for (int i = 0; i < 100000000; i++) {
+            i++;
+        }
+
         running = true;
         logger.info("Print server restarted");
 
-        return "Print server restarted";
+        return "Print server restarted\n";
     }
 
     @Override
@@ -161,7 +165,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
             return msg;
 
         logger.info("Status request for printer: " + printer);
-        return "Status for " + printer;
+        return "Status for " + printer + "\n";
     }
 
     @Override
@@ -172,7 +176,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
         String value = ConfigManager.getInstance().getParameter(parameter); // adjusted line
         logger.info("Read config for parameter: " + parameter + " with value: " + value);
-        return value;
+        return value + "\n";
     }
 
     @Override
@@ -183,7 +187,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
         ConfigManager.getInstance().setParameter(parameter, value); // adjusted line
         logger.info("Set config for parameter: " + parameter + " to value: " + value);
-        return "Set config for parameter: " + parameter + " to value: " + value;
+        return "Set config for parameter: " + parameter + " to value: " + value + "\n";
     }
 
     @Override
@@ -217,9 +221,9 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
             triesForLogin++;
             if (triesForLogin == 3) {
                 triesForLogin = 0;
-                return "Sorry bitch, i think you're trying to DDOS our PrintServer \n\n You're getting IP banned.... Sit down";
+                return "Sorry bitch, i think you're trying to DDOS our PrintServer \n\n You're getting IP banned.... Sit down\n";
             }
-            return "Login failed...";
+            return "Login failed...\n";
         }
     }
 
@@ -234,12 +238,17 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         try {
             if (isRBAC) {
                 authenticationService.setUserRole(newUser, "user");
+            } else {
+                authenticationService.addUserToCommand(newUser, "print");
+                authenticationService.addUserToCommand(newUser, "queue");
+                authenticationService.addUserToCommand(newUser, "status");
+
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         logger.info("User created: " + newUser);
-        return "User created: " + newUser;
+        return "User created: " + newUser + "\n";
     }
 
     @Override
@@ -251,26 +260,36 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
         passwordService.updateExistingPassword(user, password);
         logger.info("Password updated for user: " + user);
-        return "Password updated for user:" + user;
+        return "Password updated for user:" + user + "\n";
     }
 
     @Override
     public String updateUserPermissions(String user, String role, String token) throws RemoteException {
-        String msg = validateExecution("queue", token);
-        if (!Objects.equals(msg, successMsg))
-            return msg;
+        try {
 
-        logger.info("Permission updated for user: " + user + " to role: " + role);
-        return "Permission updated for user: " + user + " to role: " + role;
+            if (!isRBAC) {
+                return "RCAB is not enabled\n";
+            }
+            String msg = validateExecution("queue", token);
+            if (!Objects.equals(msg, successMsg))
+                return msg;
+
+            authenticationService.setUserRole(user, role);
+
+            logger.info("Permission updated for user: " + user + " to role: " + role);
+            return "Permission updated for user: " + user + " to role: " + role + "\n";
+        } catch (IOException e) {
+            return e.getMessage();
+        }
     }
 
     @Override
     public String logout(String token) throws RemoteException {
         if (token == null) {
-            return "Not logged in";
+            return "Not logged in\n";
         } else {
             tokenService.removeToken(tokenService.getUsername(token));
-            return "Logging out";
+            return "Logging out\n";
         }
     };
 
@@ -289,6 +308,44 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
             return serverNotRunningMsg;
 
         return successMsg;
+    }
+
+    @Override
+    public String addUserToCommand(String user, String command, String token) throws RemoteException {
+        try {
+            if (isRBAC) {
+                return "ACL is not enabled\n";
+            }
+            String msg = validateExecution("queue", token);
+            if (!Objects.equals(msg, successMsg))
+                return msg;
+
+            authenticationService.addUserToCommand(user, command);
+
+            logger.info("Permission updated for user: " + user + " added command: " + command);
+            return "Permission updated for user: " + user + " added command: " + command + "\n";
+        } catch (IOException e) {
+            return e.getMessage();
+        }
+    }
+
+    @Override
+    public String removeUserFromCommand(String user, String command, String token) throws RemoteException {
+        try {
+            if (isRBAC) {
+                return "ACL is not enabled\n";
+            }
+            String msg = validateExecution("queue", token);
+            if (!Objects.equals(msg, successMsg))
+                return msg;
+
+            authenticationService.removeUserFromCommand(user, command);
+
+            logger.info("Permission updated for user: " + user + " removed command: " + command + "\n");
+            return "Permission updated for user: " + user + " removed command: " + command + "\n";
+        } catch (IOException e) {
+            return e.getMessage();
+        }
     }
 
 }
