@@ -7,6 +7,7 @@ import app.auth.PasswordService;
 import app.auth.interfaces.IEncryptionService;
 import app.auth.interfaces.IPasswordService;
 import app.util.ACLPolicy;
+import app.util.Color;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -198,11 +199,11 @@ class AuthenticationServiceTest {
         @Test
         void testGetRBACAvailableCommands() {
                 String user = "jan";
-                String expectedCommands = "\nAvailable commands:\n" +
-                                "print <filename> <printer>: Prints the file.\n" +
-                                "queue <printer>: Shows print queue. \n" +
-                                "topQueue <printer> <job>: Moves job to top of queue.\n" +
-                                "restart: Restarts the print server.\n" +
+                String expectedCommands = Color.blue("\n(Available commands") + " for " + Color.yellow(user) + ":\n" +
+                                "print <filename> <printer>: Prints the file\n" +
+                                "queue <printer>: Shows print queue\n" +
+                                "topQueue <printer> <job>: Moves job to top of queue\n" +
+                                "restart: Restarts the print server\n" +
                                 "logout: Logs current user out\n";
                 assertEquals(expectedCommands, authenticationService.getRBACAvailableCommands(user),
                                 "RBAC available commands for Jan should match expected commands");
@@ -211,7 +212,7 @@ class AuthenticationServiceTest {
         @Test
         void testGetACLAvailableCommands() {
                 String user = "testuser";
-                String expectedCommands = "\nAvailable commands for testuser:\n" +
+                String expectedCommands = Color.blue("\n(Available commands") + " for " + Color.yellow(user) + ":\n" +
                                 "print\n";
                 assertEquals(expectedCommands, aclService.getACLAvailableCommands(user),
                                 "ACL available commands for testuser should match expected commands");
