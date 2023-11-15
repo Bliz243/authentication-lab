@@ -2,6 +2,7 @@ package app.auth;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -13,12 +14,15 @@ import app.util.ConfigManager;
 import app.util.RBACPolicy;
 
 /**
- * AuthenticationService class implements IAuthenticationService interface and provides methods for authentication, role-based access control (RBAC), and access control list (ACL).
- * It uses ConfigManager to read and write RBAC and ACL policies from and to JSON files.
+ * AuthenticationService class implements IAuthenticationService interface and
+ * provides methods for authentication, role-based access control (RBAC), and
+ * access control list (ACL).
+ * It uses ConfigManager to read and write RBAC and ACL policies from and to
+ * JSON files.
  * It also uses IPasswordService to verify user passwords.
  */
 public class AuthenticationService implements IAuthenticationService {
-
+    private Map<String, String> commandMap;
     private IPasswordService passwordService;
     private static final Logger logger = Logger.getLogger(AuthenticationService.class.getName());
     public RBACPolicy rbacPolicies;
@@ -26,17 +30,19 @@ public class AuthenticationService implements IAuthenticationService {
     private String rbacFileParamter = "RBAC";
     private String aclFileParamter = "ACL";
 
-
     public AuthenticationService(IPasswordService passwordService) throws IOException {
         this.aclPolicy = ConfigManager.getInstance().readACLJson(aclFileParamter);
         this.rbacPolicies = ConfigManager.getInstance().readRBACJson(rbacFileParamter);
         this.passwordService = passwordService;
+        createCommandMap();
     }
 
     public AuthenticationService(IPasswordService passwordService, String setFileParamter) throws IOException {
         this.aclPolicy = ConfigManager.getInstance().readACLJson(setFileParamter);
         this.rbacPolicies = ConfigManager.getInstance().readRBACJson(setFileParamter);
         this.passwordService = passwordService;
+        createCommandMap();
+
     }
 
     public boolean hasRBACPermission(String user, String operation) {
@@ -181,7 +187,7 @@ public class AuthenticationService implements IAuthenticationService {
 
         aclPolicy.getPolicies().forEach((command, commandPolicy) -> {
             if (commandPolicy.getMembers().contains(user)) {
-                commands.append(command).append("\n");
+                commands.append(commandMap.get(command));
             }
         });
 
@@ -215,5 +221,22 @@ public class AuthenticationService implements IAuthenticationService {
         } else {
             throw new IllegalArgumentException("The user does not have access to the command: " + operation);
         }
+    }
+
+    private void createCommandMap() {
+        commandMap = new HashMap<>();
+        commandMap.put("start", "Start the system. ");
+        commandMap.put("stop", "stop: Stops the print server.\n");
+        commandMap.put("restart", "restart: Restarts the print server.\n");
+        commandMap.put("status", "status <printer>: Shows printer status. \n");
+        commandMap.put("readconfig", "readConfig <parameter>: Reads configuration.\n");
+        commandMap.put("setconfig", "setConfig <paramter> <value>: Sets configuration.\n");
+        commandMap.put("print", "print <filename> <printer>: Prints the file.\n");
+        commandMap.put("queue", "queue <printer>: Shows print queue. \n");
+        commandMap.put("topqueue", "topQueue <printer> <job>: Moves job to top of queue.\n");
+        commandMap.put("updatepassword", "updatePassword <username> <password>: Update user password\n");
+        commandMap.put("createuser", "createUser <username> <password>: Creates a new user\n");
+        commandMap.put("updateuserperm",
+                "updateUserPermission <username> <role>: Updates a users role on the print server\n");
     }
 }

@@ -9,6 +9,7 @@ public class ACLPolicy {
     private Map<String, CommandPolicy> policies;
 
     public ACLPolicy(Map<String, Object> aclMap) {
+        System.out.println(aclMap.size());
         this.policies = new HashMap<>();
         aclMap.forEach((command, users) -> {
             if (users instanceof List) {

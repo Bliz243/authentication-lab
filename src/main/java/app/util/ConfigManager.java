@@ -57,7 +57,7 @@ public class ConfigManager {
     }
 
     public ACLPolicy readACLJson(String parameter) throws IOException {
-        Map map = objectMapper.readValue(new File(getParameter(parameter)),
+        Map<String, Object> map = objectMapper.readValue(new File(getParameter(parameter)),
                 Map.class);
         return new ACLPolicy(map);
     }

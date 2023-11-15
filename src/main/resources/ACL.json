@@ -1,1 +1,94 @@
-{"setconfig":{"members":["alice","george"]},"print":{"members":["alice","cecilia","stefan","david","erica","fred","henry","testuser","ida"]},"stop":{"members":["alice","george"]},"restart":{"members":["alice","george","cecilia","ida"]},"topqueue":{"members":["alice","cecilia","ida"]},"start":{"members":["alice","george"]},"updatepassword":{"members":["alice"]},"updateuserperm":{"members":["alice"]},"readconfig":{"members":["alice","george"]},"createuser":{"members":["alice"]},"queue":{"members":["alice","cecilia","stefan","david","erica","fred","henry","ida"]},"status":{"members":["alice","george","cecilia","stefan","david","erica","fred","henry","ida"]}}
+{
+    "setconfig": {
+        "members": [
+            "alice",
+            "george"
+        ]
+    },
+    "print": {
+        "members": [
+            "alice",
+            "cecilia",
+            "stefan",
+            "david",
+            "erica",
+            "fred",
+            "henry",
+            "testuser",
+            "ida"
+        ]
+    },
+    "stop": {
+        "members": [
+            "alice",
+            "george"
+        ]
+    },
+    "restart": {
+        "members": [
+            "alice",
+            "george",
+            "cecilia",
+            "ida"
+        ]
+    },
+    "topqueue": {
+        "members": [
+            "alice",
+            "cecilia",
+            "ida"
+        ]
+    },
+    "start": {
+        "members": [
+            "alice",
+            "george"
+        ]
+    },
+    "updatepassword": {
+        "members": [
+            "alice"
+        ]
+    },
+    "updateuserperm": {
+        "members": [
+            "alice"
+        ]
+    },
+    "readconfig": {
+        "members": [
+            "alice",
+            "george"
+        ]
+    },
+    "createuser": {
+        "members": [
+            "alice"
+        ]
+    },
+    "queue": {
+        "members": [
+            "alice",
+            "cecilia",
+            "stefan",
+            "david",
+            "erica",
+            "fred",
+            "henry",
+            "ida"
+        ]
+    },
+    "status": {
+        "members": [
+            "alice",
+            "george",
+            "cecilia",
+            "stefan",
+            "david",
+            "erica",
+            "fred",
+            "henry",
+            "ida"
+        ]
+    }
+}
