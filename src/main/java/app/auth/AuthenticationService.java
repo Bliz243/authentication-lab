@@ -38,12 +38,18 @@ public class AuthenticationService implements IAuthenticationService {
         createACLCommandMap();
     }
 
-    public AuthenticationService(IPasswordService passwordService, String setFileParamter) throws IOException {
-        this.aclPolicy = ConfigManager.getInstance().readACLJson(setFileParamter);
-        this.rbacPolicies = ConfigManager.getInstance().readRBACJson(setFileParamter);
+    public AuthenticationService(IPasswordService passwordService, String setFileParameter) throws IOException {
+        if (setFileParameter.toLowerCase().contains("rbac")) {
+            this.rbacPolicies = ConfigManager.getInstance().readRBACJson(setFileParameter);
+            this.rbacFileParamter = setFileParameter;
+        } else if (setFileParameter.toLowerCase().contains("acl")) {
+            this.aclPolicy = ConfigManager.getInstance().readACLJson(setFileParameter);
+            this.aclFileParamter = setFileParameter;
+        } else {
+            throw new IllegalArgumentException("The file parameter must indicate whether it is for RBAC or ACL.");
+        }
         this.passwordService = passwordService;
         createACLCommandMap();
-
     }
 
     public boolean hasRBACPermission(String user, String operation) {
