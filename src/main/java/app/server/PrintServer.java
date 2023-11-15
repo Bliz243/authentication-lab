@@ -111,6 +111,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     public String start(String token) throws RemoteException {
         if (!tokenService.validateToken(token))
             return invalidSessionMsg;
+
         if (isRBAC) {
             if (!authenticationService.hasRBACPermission(tokenService.getUsername(token), "start"))
                 return unauthorizedMsg;
@@ -217,8 +218,9 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
             tokenService.storeToken(user, token);
             logger.info("Login succesful for user: \n" + user + "\n" + token);
             triesForLogin = 0;
-            return Color.green("Login succesful") + "\nWelcome  " + Color.blue(user) + "\n" + printCommands(token) + " "
-                    + token;
+
+            return token + "-" + Color.green("Login succesful") + "\nWelcome " + Color.blue(user) + "\n"
+                    + printCommands(token);
         } else {
             triesForLogin++;
             if (triesForLogin == 3) {

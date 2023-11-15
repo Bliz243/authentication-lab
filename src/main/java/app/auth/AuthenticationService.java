@@ -132,7 +132,7 @@ public class AuthenticationService implements IAuthenticationService {
     @Override
     public String getRBACAvailableCommands(String user) {
         StringBuilder commands = new StringBuilder();
-        commands.append(Color.blue("\n(Available commands") + " for ").append(Color.yellow(user)).append(":\n");
+        commands.append("\nAvailable commands for ").append(user).append(":\n");
 
         for (Map.Entry<String, RBACPolicy.RolePolicy> entry : rbacPolicies.getPolicies().entrySet()) {
             RBACPolicy.RolePolicy rolePolicy = entry.getValue();
@@ -189,11 +189,11 @@ public class AuthenticationService implements IAuthenticationService {
     @Override
     public String getACLAvailableCommands(String user) {
         StringBuilder commands = new StringBuilder();
-        commands.append(Color.blue("\n(Available commands") + " for ").append(Color.yellow(user)).append(":\n");
+        commands.append("\nAvailable commands for ").append(user).append(":\n");
 
         aclPolicy.getPolicies().forEach((command, users) -> {
             if (users.contains(user)) {
-                commands.append(command).append("\n");
+                commands.append(commandMap.get(command));
             }
         });
 

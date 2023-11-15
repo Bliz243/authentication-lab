@@ -48,11 +48,9 @@ public class CommandLineInterface {
         });
         commandsMap.put("authenticate", (token, args) -> {
             String result = printServer.authenticateUser(args[0], args[1]);
-            if (result.startsWith("Login succesful")) {
-                String[] parts = result.split(" ");
-                setToken(parts[parts.length - 1]);
-                result = result.substring(0, result.lastIndexOf(" "));
-            }
+            String[] parts = result.split("-");
+            setToken(parts[0]);
+            result = result.substring(0, result.lastIndexOf(":"));
             System.out.println(result);
         });
         commandsMap.put("createUser", (token, args) -> {
