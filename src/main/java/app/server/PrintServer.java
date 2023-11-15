@@ -4,6 +4,7 @@ import app.auth.interfaces.IAuthenticationService;
 import app.auth.interfaces.IPasswordService;
 import app.auth.interfaces.ITokenService;
 import app.server.interfaces.IPrintServer;
+import app.util.Color;
 import app.util.ConfigManager;
 
 import java.util.LinkedList;
@@ -90,7 +91,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
             logger.info("Move job: " + jobId + " to top of queue on printer: " + printer);
             return "Moving job: " + jobId + " to top of queue on printer: " + printer + "\n";
         } else {
-            return "Job not found\n";
+            return Color.yellow("Job not found\n");
         }
     }
 
@@ -119,11 +120,11 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         }
 
         if (running)
-            return "Server already running...\n";
+            return Color.yellow("Server already running...\n");
 
         running = true;
         logger.info("Print server started.");
-        return "Print server started." + "\n";
+        return Color.green("Print server started\n");
     }
 
     @Override
@@ -135,7 +136,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         running = false;
 
         logger.info("Print server stopped.");
-        return "Print server stopped\n";
+        return Color.yellow("Print server stopped\n");
     }
 
     @Override
@@ -155,7 +156,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         running = true;
         logger.info("Print server restarted");
 
-        return "Print server restarted\n";
+        return "Print server " + Color.yellow("restarted\n");
     }
 
     @Override
@@ -216,14 +217,15 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
             tokenService.storeToken(user, token);
             logger.info("Login succesful for user: \n" + user + "\n" + token);
             triesForLogin = 0;
-            return "Login succesful" + "\nWelcome  " + user + "\n" + printCommands(token) + " " + token;
+            return Color.green("Login succesful") + "\nWelcome  " + Color.blue(user) + "\n" + printCommands(token) + " "
+                    + token;
         } else {
             triesForLogin++;
             if (triesForLogin == 3) {
                 triesForLogin = 0;
                 return "Sorry bitch, i think you're trying to DDOS our PrintServer \n\n You're getting IP banned.... Sit down\n";
             }
-            return "Login failed...\n";
+            return Color.red("Login failed...\n");
         }
     }
 
@@ -248,7 +250,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
             e.printStackTrace();
         }
         logger.info("User created: " + newUser);
-        return "User created: " + newUser + "\n";
+        return "User created: " + Color.green(newUser) + "\n";
     }
 
     @Override
@@ -260,7 +262,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
         passwordService.updateExistingPassword(user, password);
         logger.info("Password updated for user: " + user);
-        return "Password updated for user:" + user + "\n";
+        return "Password updated for user:" + Color.green(user) + "\n";
     }
 
     @Override
@@ -268,7 +270,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         try {
 
             if (!isRBAC) {
-                return "RCAB is not enabled\n";
+                return Color.red("RCAB is not enabled\n");
             }
             String msg = validateExecution("queue", token);
             if (!Objects.equals(msg, successMsg))
@@ -286,26 +288,26 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     @Override
     public String logout(String token) throws RemoteException {
         if (token == null) {
-            return "Not logged in\n";
+            return Color.red("Not logged in\n");
         } else {
             tokenService.removeToken(tokenService.getUsername(token));
-            return "Logging out\n";
+            return Color.yellow("Logged out\n");
         }
     };
 
     private String validateExecution(String operation, String token) {
         if (!tokenService.validateToken(token))
-            return invalidSessionMsg;
+            return Color.red(invalidSessionMsg);
         if (isRBAC) {
             if (!authenticationService.hasRBACPermission(tokenService.getUsername(token), operation))
-                return unauthorizedMsg;
+                return Color.red(unauthorizedMsg);
         } else {
             if (!authenticationService.hasACLPermission(tokenService.getUsername(token), operation))
-                return unauthorizedMsg;
+                return Color.red(unauthorizedMsg);
         }
 
         if (!running)
-            return serverNotRunningMsg;
+            return Color.yellow(serverNotRunningMsg);
 
         return successMsg;
     }
@@ -314,7 +316,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     public String addUserToCommand(String user, String command, String token) throws RemoteException {
         try {
             if (isRBAC) {
-                return "ACL is not enabled\n";
+                return Color.red("ACL is not enabled\n");
             }
             String msg = validateExecution("queue", token);
             if (!Objects.equals(msg, successMsg))
@@ -323,7 +325,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
             authenticationService.addUserToCommand(user, command);
 
             logger.info("Permission updated for user: " + user + " added command: " + command);
-            return "Permission updated for user: " + user + " added command: " + command + "\n";
+            return "Permission updated for user: " + Color.blue(user) + " added command: " + Color.blue(command) + "\n";
         } catch (IOException e) {
             return e.getMessage();
         }
@@ -333,7 +335,7 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
     public String removeUserFromCommand(String user, String command, String token) throws RemoteException {
         try {
             if (isRBAC) {
-                return "ACL is not enabled\n";
+                return Color.red("ACL is not enabled\n");
             }
             String msg = validateExecution("queue", token);
             if (!Objects.equals(msg, successMsg))
@@ -342,7 +344,8 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
             authenticationService.removeUserFromCommand(user, command);
 
             logger.info("Permission updated for user: " + user + " removed command: " + command + "\n");
-            return "Permission updated for user: " + user + " removed command: " + command + "\n";
+            return "Permission updated for user: " + Color.blue(user) + " removed command: " + Color.blue(command)
+                    + "\n";
         } catch (IOException e) {
             return e.getMessage();
         }

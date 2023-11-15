@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import app.auth.interfaces.IAuthenticationService;
 import app.auth.interfaces.IPasswordService;
 import app.util.ACLPolicy;
+import app.util.Color;
 import app.util.ConfigManager;
 import app.util.RBACPolicy;
 
@@ -118,14 +119,14 @@ public class AuthenticationService implements IAuthenticationService {
     public boolean authenticate(String username, String password) {
         boolean authenticated = passwordService.verifyPassword(username, password);
         logger.info(String.format("Authentication attempt for user %s: %s", username,
-                authenticated ? "SUCCESS" : "FAILURE"));
+                authenticated ? Color.green("SUCCESS") : Color.red("FAILURE")));
         return authenticated;
     }
 
     @Override
     public String getRBACAvailableCommands(String user) {
         StringBuilder commands = new StringBuilder();
-        commands.append("\nAvailable commands:\n");
+        commands.append(Color.blue("\n(Available commands") + " for ").append(Color.yellow(user)).append(":\n");
 
         for (Map.Entry<String, RBACPolicy.RolePolicy> entry : rbacPolicies.getPolicies().entrySet()) {
             RBACPolicy.RolePolicy rolePolicy = entry.getValue();
@@ -133,32 +134,31 @@ public class AuthenticationService implements IAuthenticationService {
                 for (String permission : rolePolicy.getPermissions()) {
                     switch (permission) {
                         case "start":
-                            commands.append("Start the system. ");
+                            commands.append("start: Start the print server\n");
                             break;
                         case "stop":
-                            commands.append("stop: Stops the print server.\\n" + //
-                                    "");
+                            commands.append("stop: Stops the print server.\n");
                             break;
                         case "restart":
-                            commands.append("restart: Restarts the print server.\n");
+                            commands.append("restart: Restarts the print server\n");
                             break;
                         case "status":
-                            commands.append("status <printer>: Shows printer status. \n");
+                            commands.append("status <printer>: Shows printer status\n");
                             break;
                         case "readconfig":
-                            commands.append("readConfig <parameter>: Reads configuration.\n");
+                            commands.append("readConfig <parameter>: Reads configuration\n");
                             break;
                         case "setconfig":
-                            commands.append("setConfig <paramter> <value>: Sets configuration.\n");
+                            commands.append("setConfig <paramter> <value>: Sets configuration\n");
                             break;
                         case "print":
-                            commands.append("print <filename> <printer>: Prints the file.\n");
+                            commands.append("print <filename> <printer>: Prints the file\n");
                             break;
                         case "queue":
-                            commands.append("queue <printer>: Shows print queue. \n");
+                            commands.append("queue <printer>: Shows print queue\n");
                             break;
                         case "topqueue":
-                            commands.append("topQueue <printer> <job>: Moves job to top of queue.\n");
+                            commands.append("topQueue <printer> <job>: Moves job to top of queue\n");
                             break;
                         case "updatepassword":
                             commands.append("updatePassword <username> <password>: Update user password\n");
@@ -170,7 +170,7 @@ public class AuthenticationService implements IAuthenticationService {
                             commands.append(
                                     "updateUserPermission <username> <role>: Updates a users role on the print server\n");
                         default:
-                            commands.append("Unknown permission. ");
+                            commands.append("Unknown permission\n");
                             break;
                     }
                 }
@@ -183,7 +183,7 @@ public class AuthenticationService implements IAuthenticationService {
     @Override
     public String getACLAvailableCommands(String user) {
         StringBuilder commands = new StringBuilder();
-        commands.append("\nAvailable commands for ").append(user).append(":\n");
+        commands.append(Color.blue("\n(Available commands") + " for ").append(Color.yellow(user)).append(":\n");
 
         aclPolicy.getPolicies().forEach((command, users) -> {
             if (users.contains(user)) {

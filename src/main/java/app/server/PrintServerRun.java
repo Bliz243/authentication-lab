@@ -15,6 +15,7 @@ import app.auth.interfaces.IEncryptionService;
 import app.auth.interfaces.IPasswordService;
 import app.auth.interfaces.ITokenService;
 import app.server.interfaces.IPrintServer;
+import app.util.Color;
 
 public class PrintServerRun {
 
@@ -28,7 +29,7 @@ public class PrintServerRun {
             IPasswordService passwordService = new PasswordService(encryptionService);
             IAuthenticationService authenticationService = new AuthenticationService(passwordService);
 
-            logger.info("Choose ACL or RBAC:");
+            logger.info("Choose " + Color.blue("ACL") + " or " + Color.blue("RBAC") + ":");
             Scanner in = new Scanner(System.in);
 
             boolean isRBAC;
@@ -51,10 +52,10 @@ public class PrintServerRun {
 
             LocateRegistry.createRegistry(5000);
             Naming.rebind("rmi://localhost:5000/PrintServer", stub);
-            logger.info("Started RMI server");
+            logger.info(Color.green("Started RMI server"));
 
         } catch (Exception e) {
-            logger.severe("Server exception: " + e.toString());
+            logger.severe(Color.red("Server exception)") + ":" + e.toString());
             e.printStackTrace();
         }
     }

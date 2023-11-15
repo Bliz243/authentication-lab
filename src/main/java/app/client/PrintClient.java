@@ -7,6 +7,7 @@ import java.util.Scanner;
 import java.util.logging.Logger;
 
 import app.server.interfaces.IPrintServer;
+import app.util.Color;
 import app.util.CommandLineInterface;
 
 public class PrintClient {
@@ -39,18 +40,18 @@ public class PrintClient {
                 try {
                     cli.executeCommand(command, commandArgs);
                 } catch (IndexOutOfBoundsException e) {
-                    logger.info("You need to input arguments for this command.");
+                    logger.info(Color.yellow("You need to input arguments for this command."));
                 } catch (NumberFormatException e) {
-                    logger.info("Invalid job");
+                    logger.info(Color.yellow("Invalid job"));
                 }
             }
 
             scanner.close();
 
         } catch (RemoteException e) {
-            logger.info("RMI server not running");
+            logger.info(Color.yellow("RMI server not running"));
         } catch (Exception e) {
-            logger.severe("Server exception: " + e.toString());
+            logger.severe(Color.red("Server exception") + ": " + e.toString());
             e.printStackTrace();
         }
     }
