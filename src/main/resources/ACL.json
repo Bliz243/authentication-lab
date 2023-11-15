@@ -13,12 +13,6 @@
   "queue": ["alice", "cecilia", "david", "erica", "fred", "henry", "ida"],
   "status": [
     "alice",
-    "george",
-    "cecilia",
-    "david",
-    "erica",
-    "fred",
-    "henry",
-    "ida"
+    "george"
   ]
 }
