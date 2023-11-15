@@ -13,8 +13,11 @@ import app.util.ConfigManager;
 import app.util.RBACPolicy;
 
 /**
- * AuthenticationService class implements IAuthenticationService interface and provides methods for authentication, role-based access control (RBAC), and access control list (ACL).
- * It uses ConfigManager to read and write RBAC and ACL policies from and to JSON files.
+ * AuthenticationService class implements IAuthenticationService interface and
+ * provides methods for authentication, role-based access control (RBAC), and
+ * access control list (ACL).
+ * It uses ConfigManager to read and write RBAC and ACL policies from and to
+ * JSON files.
  * It also uses IPasswordService to verify user passwords.
  */
 public class AuthenticationService implements IAuthenticationService {
@@ -25,7 +28,6 @@ public class AuthenticationService implements IAuthenticationService {
     public ACLPolicy aclPolicy;
     private String rbacFileParamter = "RBAC";
     private String aclFileParamter = "ACL";
-
 
     public AuthenticationService(IPasswordService passwordService) throws IOException {
         this.aclPolicy = ConfigManager.getInstance().readACLJson(aclFileParamter);
@@ -52,8 +54,8 @@ public class AuthenticationService implements IAuthenticationService {
     }
 
     public boolean hasACLPermission(String user, String operation) {
-        ACLPolicy.CommandPolicy commandPolicy = aclPolicy.getPolicies().get(operation);
-        return commandPolicy != null && commandPolicy.getMembers().contains(user);
+        List<String> users = aclPolicy.getPolicies().get(operation);
+        return users != null && users.contains(user);
     }
 
     public void setUserRole(String user, String role) throws IOException {
@@ -179,8 +181,8 @@ public class AuthenticationService implements IAuthenticationService {
         StringBuilder commands = new StringBuilder();
         commands.append("\nAvailable commands for ").append(user).append(":\n");
 
-        aclPolicy.getPolicies().forEach((command, commandPolicy) -> {
-            if (commandPolicy.getMembers().contains(user)) {
+        aclPolicy.getPolicies().forEach((command, users) -> {
+            if (users.contains(user)) {
                 commands.append(command).append("\n");
             }
         });
@@ -188,32 +190,28 @@ public class AuthenticationService implements IAuthenticationService {
         return commands.toString();
     }
 
-    @Override
     public void addUserToCommand(String user, String operation) throws IOException {
-        ACLPolicy.CommandPolicy commandPolicy = aclPolicy.getPolicies().get(operation);
-        if (commandPolicy == null) {
+        List<String> users = aclPolicy.getPolicies().get(operation);
+        if (users == null) {
             throw new IllegalArgumentException("The command does not exist: " + operation);
         }
 
-        if (!commandPolicy.getMembers().contains(user)) {
-            commandPolicy.getMembers().add(user);
-            // Assuming ConfigManager has a method to write ACL policies back to the file
+        if (!users.contains(user)) {
+            users.add(user);
             ConfigManager.getInstance().writeJson(aclPolicy.getPolicies(), aclFileParamter);
         }
     }
 
-    @Override
     public void removeUserFromCommand(String user, String operation) throws IOException {
-        ACLPolicy.CommandPolicy commandPolicy = aclPolicy.getPolicies().get(operation);
-        if (commandPolicy == null) {
+        List<String> users = aclPolicy.getPolicies().get(operation);
+        if (users == null) {
             throw new IllegalArgumentException("The command does not exist: " + operation);
         }
 
-        if (commandPolicy.getMembers().remove(user)) {
-            // Only write to the file if the user was actually removed
-            ConfigManager.getInstance().writeJson(aclPolicy.getPolicies(), aclFileParamter);
-        } else {
+        if (!users.remove(user)) {
             throw new IllegalArgumentException("The user does not have access to the command: " + operation);
+        } else {
+            ConfigManager.getInstance().writeJson(aclPolicy.getPolicies(), aclFileParamter);
         }
     }
 }
