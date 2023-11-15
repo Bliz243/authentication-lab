@@ -34,7 +34,7 @@ public class AuthenticationService implements IAuthenticationService {
         this.aclPolicy = ConfigManager.getInstance().readACLJson(aclFileParamter);
         this.rbacPolicies = ConfigManager.getInstance().readRBACJson(rbacFileParamter);
         this.passwordService = passwordService;
-        createCommandMap();
+        createACLCommandMap();
     }
 
     public AuthenticationService(IPasswordService passwordService, String setFileParameter) throws IOException {
@@ -48,7 +48,7 @@ public class AuthenticationService implements IAuthenticationService {
             throw new IllegalArgumentException("The file parameter must indicate whether it is for RBAC or ACL.");
         }
         this.passwordService = passwordService;
-        createCommandMap();
+        createACLCommandMap();
     }
 
     public boolean hasRBACPermission(String user, String operation) {
@@ -225,20 +225,20 @@ public class AuthenticationService implements IAuthenticationService {
         }
     }
 
-    private void createCommandMap() {
+    private void createACLCommandMap() {
         commandMap = new HashMap<>();
-        commandMap.put("start", "Start the system. ");
-        commandMap.put("stop", "stop: Stops the print server.\n");
-        commandMap.put("restart", "restart: Restarts the print server.\n");
-        commandMap.put("status", "status <printer>: Shows printer status. \n");
-        commandMap.put("readconfig", "readConfig <parameter>: Reads configuration.\n");
-        commandMap.put("setconfig", "setConfig <paramter> <value>: Sets configuration.\n");
-        commandMap.put("print", "print <filename> <printer>: Prints the file.\n");
-        commandMap.put("queue", "queue <printer>: Shows print queue. \n");
-        commandMap.put("topqueue", "topQueue <printer> <job>: Moves job to top of queue.\n");
+        commandMap.put("start", "start: Start the print server\n");
+        commandMap.put("stop", "stop: Stops the print server\n");
+        commandMap.put("restart", "restart: Restarts the print server\n");
+        commandMap.put("status", "status <printer>: Shows printer status\n");
+        commandMap.put("readconfig", "readConfig <parameter>: Reads configuration\n");
+        commandMap.put("setconfig", "setConfig <paramter> <value>: Sets configuration\n");
+        commandMap.put("print", "print <filename> <printer>: Prints the file\n");
+        commandMap.put("queue", "queue <printer>: Shows print queue\n");
+        commandMap.put("topqueue", "topQueue <printer> <job>: Moves job to top of queue\n");
         commandMap.put("updatepassword", "updatePassword <username> <password>: Update user password\n");
         commandMap.put("createuser", "createUser <username> <password>: Creates a new user\n");
-        commandMap.put("updateuserperm",
-                "updateUserPermission <username> <role>: Updates a users role on the print server\n");
+        commandMap.put("removeuserfromcommand", "removeUserCommand <user> <command>: Removes a command for a user\n");
+        commandMap.put("addusertocommand", "addUserCommand: <username> <command>: Adds a command to a user\n");
     }
 }
