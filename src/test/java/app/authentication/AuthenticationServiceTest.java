@@ -213,7 +213,7 @@ class AuthenticationServiceTest {
         void testGetACLAvailableCommands() {
                 String user = "testuser";
                 String expectedCommands = Color.blue("\n(Available commands") + " for " + Color.yellow(user) + ":\n" +
-                                "print\n";
+                                "print <filename> <printer>: Prints the file\n";
                 assertEquals(expectedCommands, aclService.getACLAvailableCommands(user),
                                 "ACL available commands for testuser should match expected commands");
         }
