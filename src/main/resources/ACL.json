@@ -1,1 +1,24 @@
-{"setconfig":["alice","george"],"addusertocommand":["alice"],"restart":["alice","george","cecilia","ida"],"start":["alice","george"],"updatepassword":["alice"],"removeuserfromcommand":["alice"],"readconfig":["alice","george"],"createuser":["alice"],"print":["alice","cecilia","stefan","david","erica","fred","henry","testuser","ida"],"stop":["alice","george"],"topqueue":["alice","cecilia","ida"],"queue":["alice","cecilia","stefan","david","erica","fred","henry","ida"],"status":["alice","george","cecilia","stefan","david","erica","fred","henry","ida"]}
+{
+  "setconfig": ["alice", "george"],
+  "addusertocommand": ["alice"],
+  "restart": ["alice", "george", "cecilia", "ida"],
+  "start": ["alice", "george"],
+  "updatepassword": ["alice"],
+  "removeuserfromcommand": ["alice"],
+  "readconfig": ["alice", "george"],
+  "createuser": ["alice"],
+  "print": ["alice", "cecilia", "david", "erica", "fred", "henry", "ida"],
+  "stop": ["alice", "george"],
+  "topqueue": ["alice", "cecilia", "ida"],
+  "queue": ["alice", "cecilia", "david", "erica", "fred", "henry", "ida"],
+  "status": [
+    "alice",
+    "george",
+    "cecilia",
+    "david",
+    "erica",
+    "fred",
+    "henry",
+    "ida"
+  ]
+}

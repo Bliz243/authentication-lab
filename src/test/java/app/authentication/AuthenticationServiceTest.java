@@ -115,7 +115,7 @@ class AuthenticationServiceTest {
 
         @Test
         public void testAuthenticate() {
-                assertTrue(authenticationService.authenticate("stefan", "denstore"));
+                assertTrue(authenticationService.authenticate("alice", "newpassword"));
                 assertFalse(authenticationService.authenticate("alice", "wrongpassword"));
                 assertFalse(authenticationService.authenticate("nonexistentuser", "password123"));
         }
@@ -199,7 +199,7 @@ class AuthenticationServiceTest {
         @Test
         void testGetRBACAvailableCommands() {
                 String user = "jan";
-                String expectedCommands = Color.blue("\n(Available commands") + " for " + Color.yellow(user) + ":\n" +
+                String expectedCommands = Color.blue("\nAvailable commands") + " for " + Color.yellow(user) + ":\n" +
                                 "print <filename> <printer>: Prints the file\n" +
                                 "queue <printer>: Shows print queue\n" +
                                 "topQueue <printer> <job>: Moves job to top of queue\n" +
@@ -212,7 +212,7 @@ class AuthenticationServiceTest {
         @Test
         void testGetACLAvailableCommands() {
                 String user = "testuser";
-                String expectedCommands = Color.blue("\n(Available commands") + " for " + Color.yellow(user) + ":\n" +
+                String expectedCommands = Color.blue("\nAvailable commands") + " for " + Color.yellow(user) + ":\n" +
                                 "print <filename> <printer>: Prints the file\n";
                 assertEquals(expectedCommands, aclService.getACLAvailableCommands(user),
                                 "ACL available commands for testuser should match expected commands");

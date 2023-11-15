@@ -50,7 +50,7 @@ public class CommandLineInterface {
             String result = printServer.authenticateUser(args[0], args[1]);
             String[] parts = result.split("-");
             setToken(parts[0]);
-            result = result.substring(0, result.lastIndexOf(":"));
+            result = parts[1];
             System.out.println(result);
         });
         commandsMap.put("createUser", (token, args) -> {

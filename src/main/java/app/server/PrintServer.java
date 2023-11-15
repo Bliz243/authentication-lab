@@ -239,18 +239,17 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
             return msg;
 
         passwordService.createNewUser(newUser, password);
-        try {
-            if (isRBAC) {
-                authenticationService.setUserRole(newUser, "user");
-            } else {
-                authenticationService.addUserToCommand(newUser, "print");
-                authenticationService.addUserToCommand(newUser, "queue");
-                authenticationService.addUserToCommand(newUser, "status");
-
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        // try {
+        // if (isRBAC) {
+        // authenticationService.setUserRole(newUser, "user");
+        // } else {
+        // authenticationService.addUserToCommand(newUser, "print");
+        // authenticationService.addUserToCommand(newUser, "queue");
+        // authenticationService.addUserToCommand(newUser, "status");
+        // }
+        // } catch (IOException e) {
+        // e.printStackTrace();
+        // }
         logger.info("User created: " + newUser);
         return "User created: " + Color.green(newUser) + "\n";
     }
