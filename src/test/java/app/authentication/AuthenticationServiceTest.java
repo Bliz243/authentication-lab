@@ -198,11 +198,11 @@ class AuthenticationServiceTest {
         @Test
         void testGetRBACAvailableCommands() {
                 String user = "jan";
-                String expectedCommands = "\nAvailable commands:\n" +
-                                "print <filename> <printer>: Prints the file.\n" +
-                                "queue <printer>: Shows print queue. \n" +
-                                "topQueue <printer> <job>: Moves job to top of queue.\n" +
-                                "restart: Restarts the print server.\n" +
+                String expectedCommands = "\nAvailable commands for " + user + ":\n" +
+                                "print <filename> <printer>: Prints the file\n" +
+                                "queue <printer>: Shows print queue\n" +
+                                "topQueue <printer> <job>: Moves job to top of queue\n" +
+                                "restart: Restarts the print server\n" +
                                 "logout: Logs current user out\n";
                 assertEquals(expectedCommands, authenticationService.getRBACAvailableCommands(user),
                                 "RBAC available commands for Jan should match expected commands");
