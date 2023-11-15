@@ -191,8 +191,8 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
         StringBuilder sb = new StringBuilder();
         sb.append("\nAvailable commands:\n");
         if (!tokenService.validateToken(token)) {
-            sb.append("authenticate <username> <password>: Authenticate user");
-            sb.append("help: To see available commands");
+            sb.append("authenticate <username> <password>: Authenticate user\n");
+            sb.append("help: To see available commands\n");
             return sb.toString();
         }
 

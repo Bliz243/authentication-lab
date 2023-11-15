@@ -33,11 +33,11 @@ public class PrintServerRun {
 
             boolean isRBAC;
             while (true) {
-                in.nextLine();
-                if (in.toString().equalsIgnoreCase("rbac")) {
+                String input = in.nextLine();
+                if (input.equalsIgnoreCase("rbac")) {
                     isRBAC = true;
                     break;
-                } else if (in.toString().equalsIgnoreCase("acl")) {
+                } else if (input.equalsIgnoreCase("acl")) {
                     isRBAC = false;
                     break;
                 }

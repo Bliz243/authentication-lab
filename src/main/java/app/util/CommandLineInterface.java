@@ -108,10 +108,10 @@ public class CommandLineInterface {
             try {
                 action.execute(tokenToUse, args);
             } catch (RemoteException e) {
-                System.err.println("Error executing command: " + e.getMessage());
+                System.err.println("Error executing command: " + e.getMessage() + "\n");
             }
         } else {
-            System.out.println("Unknown command.");
+            System.out.println("Unknown command.\n");
         }
     }
 
