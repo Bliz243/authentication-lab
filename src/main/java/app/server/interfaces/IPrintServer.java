@@ -1,9 +1,11 @@
 package app.server.interfaces;
 
+import java.io.IOException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.List;
 
 public interface IPrintServer extends Remote {
 
@@ -46,5 +48,13 @@ public interface IPrintServer extends Remote {
                         throws RemoteException, NoSuchAlgorithmException, InvalidKeySpecException;
 
         String logout(String token) throws RemoteException;
+
+        String createRole(String name, List<String> permissions, String token) throws RemoteException;
+
+        String addPermToRole(String role, String permission, String token) throws RemoteException;
+
+        String removePermFromRole(String role, String permission, String token) throws RemoteException;
+
+        String deleteRole(String role, String token) throws RemoteException;
 
 }

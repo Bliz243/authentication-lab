@@ -175,6 +175,19 @@ public class AuthenticationService implements IAuthenticationService {
                         case "updateuserperm":
                             commands.append(
                                     "updateUserPermission <username> <role>: Updates a users role on the print server\n");
+                        case "addcmdtorole":
+                            commands.append("addCmdToRole: <command> <role>: Adds a command to a role\n");
+                            break;
+                        case "deleterole":
+                            commands.append("deleteRole <role>: Removes a role\n");
+                            break;
+                        case "rvmcmdfromrole":
+                            commands.append("rmvCmdFromRole: <command> <role>: Removes a command from a role\n");
+                            break;
+                        case "createrole":
+                            commands.append(
+                                    "createRole: <name> <permissions...>: Creates a new role, with permissions separated with spaces \n");
+                            break;
                         default:
                             commands.append("Unknown permission\n");
                             break;
@@ -240,5 +253,21 @@ public class AuthenticationService implements IAuthenticationService {
         commandMap.put("createuser", "createUser <username> <password>: Creates a new user\n");
         commandMap.put("removeuserfromcommand", "removeUserCommand <user> <command>: Removes a command for a user\n");
         commandMap.put("addusertocommand", "addUserCommand: <username> <command>: Adds a command to a user\n");
+    }
+
+    @Override
+    public void removeCommandFromRole(String role, String operation) throws IOException {
+        if (!rbacPolicies.getPolicies().containsKey(role)) {
+            throw new IllegalArgumentException("The role does not exist: " + role);
+        }
+        RBACPolicy.RolePolicy rolePolicy = rbacPolicies.getPolicies().get(role);
+        if (!rolePolicy.getPermissions().contains(operation)) {
+            throw new IllegalArgumentException("The operation does not exist on: " + role);
+
+        } else {
+            rolePolicy.getPermissions().remove(operation);
+            ConfigManager.getInstance().writeJson(rbacPolicies.getPolicies(), rbacFileParamter);
+            logger.info(String.format("Permission '%s' removed from role '%s'.", operation, role));
+        }
     }
 }

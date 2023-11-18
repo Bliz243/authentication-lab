@@ -17,7 +17,11 @@
       "topqueue",
       "updatepassword",
       "createuser",
-      "updateuserperm"
+      "updateuserperm",
+      "deleterole",
+      "addcmdtorole",
+      "rvmcmdfromrole",
+      "createrole"
     ]
   },
   "technician": {

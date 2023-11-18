@@ -8,6 +8,7 @@ import app.util.Color;
 import app.util.ConfigManager;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.logging.Logger;
 import java.io.IOException;
@@ -346,6 +347,86 @@ public class PrintServer extends UnicastRemoteObject implements IPrintServer {
 
             logger.info("Permission updated for user: " + user + " removed command: " + command + "\n");
             return "Permission updated for user: " + Color.blue(user) + " removed command: " + Color.blue(command)
+                    + "\n";
+        } catch (IOException e) {
+            return e.getMessage();
+        }
+    }
+
+    @Override
+    public String createRole(String name, List<String> permissions, String token) throws RemoteException {
+        try {
+            if (!isRBAC) {
+                return Color.red("RBAC is not enabled\n");
+            }
+            String msg = validateExecution("queue", token);
+            if (!Objects.equals(msg, successMsg))
+                return msg;
+
+            authenticationService.createNewRole(name, permissions);
+
+            logger.info("Created new role: " + name + "\n");
+            return "Created new role" + Color.blue(name) + "\n"
+                    + "\n";
+        } catch (IOException e) {
+            return e.getMessage();
+        }
+    }
+
+    @Override
+    public String addPermToRole(String role, String permission, String token) throws RemoteException {
+        try {
+            if (!isRBAC) {
+                return Color.red("RBAC is not enabled\n");
+            }
+            String msg = validateExecution("queue", token);
+            if (!Objects.equals(msg, successMsg))
+                return msg;
+
+            authenticationService.addPermissionToRole(role, permission);
+
+            logger.info("Added permission: " + Color.blue(permission) + " to role: " + Color.yellow(role) + "\n");
+            return "Added permission: " + Color.blue(permission) + " to role: " + Color.yellow(role) + "\n"
+                    + "\n";
+        } catch (IOException e) {
+            return e.getMessage();
+        }
+    }
+
+    @Override
+    public String deleteRole(String role, String token) throws RemoteException {
+        try {
+            if (!isRBAC) {
+                return Color.red("RBAC is not enabled\n");
+            }
+            String msg = validateExecution("queue", token);
+            if (!Objects.equals(msg, successMsg))
+                return msg;
+
+            authenticationService.deleteRole(role);
+
+            logger.info("Removed role: " + Color.red(role) + "\n");
+            return "Removed role: " + Color.red(role) + "\n"
+                    + "\n";
+        } catch (IOException e) {
+            return e.getMessage();
+        }
+    }
+
+    @Override
+    public String removePermFromRole(String role, String permission, String token) throws RemoteException {
+        try {
+            if (!isRBAC) {
+                return Color.red("RBAC is not enabled\n");
+            }
+            String msg = validateExecution("queue", token);
+            if (!Objects.equals(msg, successMsg))
+                return msg;
+
+            authenticationService.removeCommandFromRole(role, permission);
+
+            logger.info("Removed permission: " + Color.blue(permission) + " to role: " + Color.yellow(role) + "\n");
+            return "Removed permission: " + Color.blue(permission) + " to role: " + Color.yellow(role) + "\n"
                     + "\n";
         } catch (IOException e) {
             return e.getMessage();

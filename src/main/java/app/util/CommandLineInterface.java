@@ -3,7 +3,9 @@ package app.util;
 import java.rmi.RemoteException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import app.server.interfaces.IPrintServer;
@@ -102,6 +104,27 @@ public class CommandLineInterface {
         });
         commandsMap.put("removeUserCommand", (token, args) -> {
             print(printServer.removeUserFromCommand(args[0], args[1], token));
+        });
+        commandsMap.put("deleteRole", (token, args) -> {
+            print(printServer.deleteRole(args[0], token));
+        });
+
+        commandsMap.put("createRole", (token, args) -> {
+            List<String> permissions = new ArrayList<>();
+
+            for (int i = 1; i < args.length; i++) {
+                permissions.add(args[i]);
+            }
+
+            print(printServer.createRole(args[0], permissions, token));
+        });
+
+        commandsMap.put("rvmCmdFromRole", (token, args) -> {
+            print(printServer.removePermFromRole(args[0], args[1], token));
+        });
+
+        commandsMap.put("addCmdToRole", (token, args) -> {
+            print(printServer.addPermToRole(args[0], args[1], token));
         });
 
     }
