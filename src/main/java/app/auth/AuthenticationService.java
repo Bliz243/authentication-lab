@@ -175,6 +175,7 @@ public class AuthenticationService implements IAuthenticationService {
                         case "updateuserperm":
                             commands.append(
                                     "updateUserPermission <username> <role>: Updates a users role on the print server\n");
+                            break;
                         case "addcmdtorole":
                             commands.append("addCmdToRole: <command> <role>: Adds a command to a role\n");
                             break;
